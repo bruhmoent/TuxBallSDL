@@ -18,10 +18,7 @@ public:
 	void update() override
 	{
 
-		bool hasCollision = Game::HasCollision(transform->position.x, transform->position.y);;
-
-
-		
+		bool hasCollision = Game::HasCollision(transform->position.x, transform->position.y);	
 		
 		if (Game::event.type == SDL_KEYDOWN) {
 			
