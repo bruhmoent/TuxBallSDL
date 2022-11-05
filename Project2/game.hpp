@@ -1,0 +1,32 @@
+#pragma once
+#define Game_hpp
+#include <stdio.h>
+#include "SDL.h"
+#include "SDL_image.h"
+#include <iostream>
+#include <vector>
+class ColliderComponent;
+class Game {
+public:
+	Game();
+	~Game();
+	void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
+	void handleEvents();
+	void update();
+	void render();
+	void clean();
+
+	static SDL_Renderer* renderer;
+	static SDL_Event event;
+	static std::vector<ColliderComponent*> colliders;
+	static void AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind);
+	static bool HasCollision(int xpos, int ypos);
+	static SDL_Rect camera;
+	bool running() {
+		return isRunning;
+	};
+private:
+	int cnt = 0;
+	bool isRunning;
+	SDL_Window* window;
+};	

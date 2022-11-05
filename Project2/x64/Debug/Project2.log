@@ -1,0 +1,21 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(491,5): warning MSB8028: Katalog pośredni (x64\Debug\) zawiera pliki udostępnione z innego projektu (Project2.vcxproj). Może to spowodować niepoprawne zachowanie podczas oczyszczania i ponownej kompilacji.
+  game.cpp
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(21,84): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(21,61): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(28,80): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(28,57): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(37,84): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(37,58): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(48,84): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(48,58): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(59,85): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(59,61): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(70,85): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\inputHandler.h(70,61): warning C4244: "argument": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\TileComponent.h(21,16): warning C4244: "=": konwersja z "int" do "float", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\TileComponent.h(22,16): warning C4244: "=": konwersja z "int" do "float", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\TileComponent.h(36,27): warning C4244: "=": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\TileComponent.h(37,27): warning C4244: "=": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\game.cpp(101,66): warning C4244: "=": konwersja z "float" do "int", możliwa utrata danych
+C:\Users\bar12\source\repos\Project2\Project2\game.cpp(102,66): warning C4244: "=": konwersja z "float" do "int", możliwa utrata danych
+  Project2.vcxproj -> C:\Users\bar12\source\repos\Project2\x64\Debug\TuxBall.exe
