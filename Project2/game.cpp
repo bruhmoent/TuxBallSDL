@@ -5,6 +5,9 @@
 #include "ECS/Components.h"
 #include "vectorHandler.h"
 #include "Collision.h"
+#include <fstream>
+#include "inputHandler.h"
+#include <vector>
 Map* map;
 
 SDL_Renderer* Game::renderer = nullptr;
@@ -13,10 +16,12 @@ Manager manager;
 
 SDL_Event Game::event;
 std::vector<ColliderComponent*> Game::colliders;
+
 auto& player(manager.addEntity());
 SDL_Rect Game::camera = { 0,0,800,640 };
 int images[25][25] = {};
 const char* mapfile = "const_assets/tiles.png";
+bool collision = false;
 enum groupLabels : std::size_t
 {
 	groupMap,
@@ -28,6 +33,7 @@ enum groupLabels : std::size_t
 auto& tiles(manager.getGroup(groupMap));
 auto& players(manager.getGroup(groupPlayers));
 auto& enemies(manager.getGroup(groupEnemies));
+std::vector<Rectagle*> blocks = {};
 
 Game::Game()
 {
@@ -65,7 +71,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		map = new Map();
 
 		//Usage of ECS.h
-		Map::loadMap("const_assets/map3.txt", 25, 20);
+		blocks = Map::loadMap("const_assets/map3.txt", 25, 20);
 		player.addComponent<TransformComponent>(2);
 		player.addComponent<SpriteComponent>("sprites/tuxball.png");
 		player.addComponent<KeyboardController>();
@@ -92,12 +98,54 @@ void Game::handleEvents()
 	}
 
 };
+bool Game::HasCollision(int xpos, int ypos) {
+
+	SDL_Rect* p = new SDL_Rect;
+	p->x = xpos;
+	p->y = ypos;
+	p->w = 64;
+	p->h = 64;
+
+	for (auto i : blocks)
+	{
+		SDL_Rect* b = new SDL_Rect;
+		b->x = i->x;
+		b->y = i->y;
+		b->w = i->w;
+		b->h = i->h;
+		bool colision = SDL_HasIntersection(p, b);
+
+		if (colision)
+		{
+			return true;
+		}
+	}
+	return false;
+
+}
+
+bool Game::cCol() {
+	return collision;
+}
+void Game::uCol() {
+	collision = false;
+}
 void Game::update()
 {
-
+	int cq = 1;
 	manager.refresh();
 	manager.update();
-
+	Vector2D playerPos = player.getComponent<TransformComponent>().position;
+	//std::cout << "Player position: " << playerPos;
+	if (HasCollision(player.getComponent<TransformComponent>().position.x, player.getComponent<TransformComponent>().position.y))
+	{
+		player.getComponent<TransformComponent>().position = playerPos;
+		//std::cout << "\nCollision.\n" << cq;
+		collision = true;
+	}
+	else {
+		collision = false;
+	}
 	camera.x = player.getComponent<TransformComponent>().position.x - 400;
 	camera.y = player.getComponent<TransformComponent>().position.y - 320;
 
@@ -118,6 +166,7 @@ void Game::render()
 {
 	SDL_RenderClear(renderer);
 	//render-body
+
 	for (auto& t : tiles)
 	{
 		t->draw();
@@ -134,6 +183,7 @@ void Game::render()
 };
 void Game::clean()
 {
+
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
@@ -153,12 +203,22 @@ void Game::AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kin
 	int h = 9;
 }
 
-bool Game::HasCollision(int xpos, int ypos) {
 
-	int x = xpos / 64 +1;
-	int y = ypos / 64;
+Point* Game::GetPlayerPosition() {
+	Vector2D vector = player.getComponent<TransformComponent>().position;
 
-	//std::cout << "Zdarzenie " << xpos << ":" << ypos << " (" << x << ":" << y << ") -> " << images[y][x] << "\n";
+	Point* point = new Point();
+	point->x = vector.x;
+	point->y = vector.y;
 
-	return images[y][x] == 0;
+	return point;
 }
+
+void Game::backToPriorPosition(float x, float y) {
+	Vector2D vector = player.getComponent<TransformComponent>().position;
+
+	vector.x = x;
+	vector.y = y;
+}
+
+

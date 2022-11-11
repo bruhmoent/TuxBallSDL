@@ -151,6 +151,8 @@
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Point.cpp" />
+    <ClCompile Include="Rectagle.cpp" />
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="tilemapObj.cpp" />
     <ClCompile Include="vectorHandler.cpp" />
@@ -167,7 +169,9 @@
     <ClInclude Include="game.hpp" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="inputHandler.h" />
+    <ClInclude Include="Point.h" />
     <ClInclude Include="PositionComponent.h" />
+    <ClInclude Include="Rectagle.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SpriteComponents.h" />
     <ClInclude Include="TextureManager.h" />
