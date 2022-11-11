@@ -5,6 +5,7 @@
 #include "SDL_image.h"
 #include <iostream>
 #include <vector>
+#include "Point.h"
 class ColliderComponent;
 class Game {
 public:
@@ -22,6 +23,11 @@ public:
 	static void AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind);
 	static bool HasCollision(int xpos, int ypos);
 	static SDL_Rect camera;
+	static bool cCol();
+	static void uCol();
+	static void backToPriorPosition(float x, float y);
+	static Point* GetPlayerPosition();
+
 	bool running() {
 		return isRunning;
 	};
