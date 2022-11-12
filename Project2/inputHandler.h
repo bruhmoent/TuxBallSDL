@@ -7,11 +7,16 @@
 #include <time.h>
 #include <windows.h>
 #include <vector>
+#include <chrono>
+#include <thread>
+
 class KeyboardController : public Component
 {
 public:
 	TransformComponent* transform;
 	Point* psOld;
+	Point* psOldBeforeJump;
+	bool jump = false;
 
 	void init()override
 	{
@@ -20,9 +25,24 @@ public:
 	void update() override
 	{
 		bool hasCollision = Game::HasCollision(transform->position.x, transform->position.y);
-
+		//transform->position.y++;
 		if (!hasCollision) {
 			psOld = Game::GetPlayerPosition();
+		}
+
+
+		if (jump) {
+			Point* ps3 = Game::GetPlayerPosition();
+			if (psOldBeforeJump != NULL && psOldBeforeJump->y > transform->position.y) {
+				
+			}
+			else {
+				jump = false;
+			}
+
+		}
+		else {
+			psOldBeforeJump = Game::GetPlayerPosition();
 		}
 
 		if (Game::event.type == SDL_KEYDOWN) {
@@ -31,13 +51,12 @@ public:
 
 			if (hasCollision) {
 				transform->velocity.x = 0;
-				transform->velocity.y = 0;
+				//transform->velocity.y = 0;
 			}
 
 			switch (Game::event.key.keysym.sym) {
-			case SDLK_w:
+			/*case SDLK_w:
 				hasCollision = Game::HasCollision(transform->position.x, transform->position.y - 5);
-
 				if (hasCollision) {
 					transform->velocity.y = 0;
 
@@ -49,10 +68,10 @@ public:
 
 				hasCollision = Game::HasCollision(transform->position.x, transform->position.y - 1);
 
-				break;
+				break;*/
 
 			case SDLK_a:
-				hasCollision = Game::HasCollision(transform->position.x -5, transform->position.y);
+				hasCollision = Game::HasCollision(transform->position.x - 5, transform->position.y);
 
 				if (hasCollision) {
 					transform->velocity.x = 0;
@@ -60,16 +79,18 @@ public:
 					break;
 				}
 				else {
-					transform->velocity.x = -1;
+					transform->velocity.x = transform->velocity.x ? -1 : -1;
+					transform->velocity.x = jump ? -1 : -1;
+				//	transform->velocity.x = -1;
 				}
 
 				hasCollision = Game::HasCollision(transform->position.x + 5, transform->position.y);
 
 				//transform->velocity.x = -1;
 				break;
-			case SDLK_s:
-				transform->velocity.y = 1;
-				break;
+			//case SDLK_s:
+			//	transform->velocity.y = 1;
+				//break;
 			case SDLK_d:
 				hasCollision = Game::HasCollision(transform->position.x + 5, transform->position.y);
 
@@ -79,13 +100,19 @@ public:
 					break;
 				}
 				else {
-					transform->velocity.x = 1;
+					transform->velocity.x = transform->velocity.x ? 1 : 1;
+					transform->velocity.x = jump ? 1 : 1;
 				}
 
 				hasCollision = Game::HasCollision(transform->position.x + 5, transform->position.y);
 
 				break;
-
+			case SDLK_SPACE:
+				if (!jump) {
+					transform->position.y -= 70;
+				}
+				jump = true;
+				break;
 			default:
 				break;
 			}
@@ -126,8 +153,11 @@ public:
 				transform->position.x = psOld->x;
 				transform->position.y = psOld->y;
 			}
-
+			
 			return;
+		}
+		else if (!Game::cColP()) {
+			transform->position.y += 2;
 		}
 
 

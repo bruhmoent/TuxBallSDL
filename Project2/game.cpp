@@ -22,6 +22,7 @@ SDL_Rect Game::camera = { 0,0,800,640 };
 int images[25][25] = {};
 const char* mapfile = "const_assets/tiles.png";
 bool collision = false;
+bool collisionP = false;
 enum groupLabels : std::size_t
 {
 	groupMap,
@@ -124,8 +125,38 @@ bool Game::HasCollision(int xpos, int ypos) {
 
 }
 
+bool Game::HasCollisionP(int xpos, int ypos) {
+
+	SDL_Rect* p = new SDL_Rect;
+	p->x = xpos;
+	p->y = ypos;
+	p->w = 64;
+	p->h = 64;
+
+	for (auto i : blocks)
+	{
+		SDL_Rect* b = new SDL_Rect;
+		b->x = i->x;
+		b->y = i->y - 2;
+		b->w = i->w;
+		b->h = i->h;
+		bool colision = SDL_HasIntersection(p, b);
+
+		if (colision)
+		{
+			return true;
+		}
+	}
+	return false;
+
+}
+
 bool Game::cCol() {
 	return collision;
+}
+
+bool Game::cColP() {
+	return collisionP;
 }
 void Game::uCol() {
 	collision = false;
@@ -145,6 +176,15 @@ void Game::update()
 	}
 	else {
 		collision = false;
+	}
+	if (HasCollisionP(player.getComponent<TransformComponent>().position.x, player.getComponent<TransformComponent>().position.y))
+	{
+		player.getComponent<TransformComponent>().position = playerPos;
+		//std::cout << "\nCollision.\n" << cq;
+		collisionP = true;
+	}
+	else {
+		collisionP = false;
 	}
 	camera.x = player.getComponent<TransformComponent>().position.x - 400;
 	camera.y = player.getComponent<TransformComponent>().position.y - 320;
