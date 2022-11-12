@@ -137,7 +137,7 @@ bool Game::HasCollisionP(int xpos, int ypos) {
 	{
 		SDL_Rect* b = new SDL_Rect;
 		b->x = i->x;
-		b->y = i->y - 2;
+		b->y = i->y - 3;
 		b->w = i->w;
 		b->h = i->h;
 		bool colision = SDL_HasIntersection(p, b);
@@ -166,6 +166,7 @@ void Game::update()
 	int cq = 1;
 	manager.refresh();
 	manager.update();
+	//std::cout << time(NULL);
 	Vector2D playerPos = player.getComponent<TransformComponent>().position;
 	//std::cout << "Player position: " << playerPos;
 	if (HasCollision(player.getComponent<TransformComponent>().position.x, player.getComponent<TransformComponent>().position.y))
