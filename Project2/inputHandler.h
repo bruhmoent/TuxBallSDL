@@ -28,9 +28,7 @@ public:
 	void update() override
 	{
 
-
 		bool hasCollision = Game::HasCollision(transform->position.x, transform->position.y);
-		//transform->position.y++;
 		if (!hasCollision) {
 			psOld = Game::GetPlayerPosition();
 		}
@@ -41,26 +39,12 @@ public:
 
 		if (timeF > 0 && jump)
 		{
-			//std::cout << "C: " << timeF << " ";
-
 			if (timeF > 0 && timeF <= 300) {
-				//70px -> 300ms
-				//x -> timeF ms
 				transform->position.y -= 30 * timeF / 600;
-			}
-			else if (timeF > 300 && timeF < 40)
-			{
-				//	transform->velocity.y += 1;
-			}
-			else {
-				//	transform->velocity.y = -1;
 			}
 
 			if (timeF >= 400 || timeF == 0) {
 				jump = false;
-			//	std::cout << "Koniec skoku ";
-				//transform->velocity.y = 0;
-				//std::cout << getDurationInMilisecons(timeOld, timeC) << " ";
 			}
 		}
 
@@ -69,21 +53,10 @@ public:
 			Point* ps3 = Game::GetPlayerPosition();
 			if (psOldBeforeJump != NULL && psOldBeforeJump->y > transform->position.y) {
 			}
-
-			
-
 		}
 		else {
 			psOldBeforeJump = Game::GetPlayerPosition();
 		}
-
-		/*	if (jump) {
-				long timeF = getDurationInMilisecons(timeOld, timeC);
-				transform->position.y -= 70 * timeF / 650;
-			}*/
-
-
-
 
 		if (Game::event.type == SDL_KEYDOWN) {
 
@@ -91,25 +64,9 @@ public:
 
 			if (hasCollision) {
 				transform->velocity.x = 0;
-				//transform->velocity.y = 0;
 			}
 
 			switch (Game::event.key.keysym.sym) {
-				/*case SDLK_w:
-					hasCollision = Game::HasCollision(transform->position.x, transform->position.y - 5);
-					if (hasCollision) {
-						transform->velocity.y = 0;
-
-						break;
-					}
-					else {
-						transform->velocity.y = -1;
-					}
-
-					hasCollision = Game::HasCollision(transform->position.x, transform->position.y - 1);
-
-					break;*/
-
 			case SDLK_a:
 				hasCollision = Game::HasCollision(transform->position.x - 5, transform->position.y);
 
@@ -121,16 +78,10 @@ public:
 				else {
 					transform->velocity.x = transform->velocity.x ? -1 : -2;
 					transform->velocity.x = jump ? -1 : -2;
-					//	transform->velocity.x = -1;
 				}
 
 				hasCollision = Game::HasCollision(transform->position.x + 5, transform->position.y);
-
-				//transform->velocity.x = -1;
 				break;
-				//case SDLK_s:
-				//	transform->velocity.y = 1;
-					//break;
 			case SDLK_d:
 				hasCollision = Game::HasCollision(transform->position.x + 5, transform->position.y);
 
@@ -148,11 +99,10 @@ public:
 
 				break;
 			case SDLK_SPACE:
-				if (!jump) {
+				if (!jump && !Game::cCol()) {
+					 
 					timeOld = getTime();
 					timeC = getTime();
-					//transform->position.y -= 70;
-					//std::cout << "Skok "<<timeOld<<" ";
 					jump = true;
 				}
 
@@ -165,7 +115,9 @@ public:
 		if (Game::event.type == SDL_KEYUP)
 		{
 			switch (Game::event.key.keysym.sym) {
+				if (!Game::cCol()) {
 			case SDLK_w:
+
 				transform->velocity.y = 0;
 
 				break;
@@ -181,11 +133,9 @@ public:
 			default:
 
 				break;
+				}
 			}
 		}
-		//hasCollision = Game::HasCollision(transform->position.x, transform->position.y - 1);
-		//if (hasCollision == false)
-		//	transform->position.y++;
 
 		if (Game::cCol()) {
 			Point* ps2 = Game::GetPlayerPosition();
@@ -198,10 +148,10 @@ public:
 				
 				transform->position.y = psOld->y;
 
-				auto velMirror = transform-> velocity * -1;
-				transform->velocity = velMirror;
+				auto velMirror = transform-> velocity.x * -1;
+				transform->velocity.x = velMirror;
 	
-				//transform->velocity = velMirror;
+				transform->velocity.x = velMirror;
 			}
 
 			return;

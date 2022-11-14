@@ -20,7 +20,7 @@ std::vector<ColliderComponent*> Game::colliders;
 auto& player(manager.addEntity());
 SDL_Rect Game::camera = { 0,0,800,640 };
 int images[25][25] = {};
-const char* mapfile = "const_assets/tiles.png";
+const char* mapfile = "const_assets/tileTs.png";
 bool collision = false;
 bool collisionP = false;
 enum groupLabels : std::size_t
@@ -166,13 +166,10 @@ void Game::update()
 	int cq = 1;
 	manager.refresh();
 	manager.update();
-	//std::cout << time(NULL);
 	Vector2D playerPos = player.getComponent<TransformComponent>().position;
-	//std::cout << "Player position: " << playerPos;
 	if (HasCollision(player.getComponent<TransformComponent>().position.x, player.getComponent<TransformComponent>().position.y))
 	{
 		player.getComponent<TransformComponent>().position = playerPos;
-		//std::cout << "\nCollision.\n" << cq;
 		collision = true;
 	}
 	else {
@@ -199,15 +196,13 @@ void Game::update()
 	if (camera.y > camera.h)
 		camera.y = camera.h;
 
-	//std::cout << player.getComponent<TransformComponent>().position.x;
-
 };
 
 void Game::render()
 {
 	SDL_RenderClear(renderer);
 	//render-body
-
+	SDL_SetRenderDrawColor(renderer, 124, 184, 217, 255);
 	for (auto& t : tiles)
 	{
 		t->draw();
@@ -240,7 +235,6 @@ void Game::AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kin
 	auto& tile2(tile.getComponent<TileComponent>());
 
 	images[y][x] = kind;
-	//tile2.position
 	int h = 9;
 }
 
