@@ -29,6 +29,7 @@ public:
 	{
 
 		bool hasCollision = Game::HasCollision(transform->position.x, transform->position.y);
+		bool hasCollisionP = Game::HasCollisionP(transform->position.x, transform->position.y);
 		if (!hasCollision) {
 			psOld = Game::GetPlayerPosition();
 		}
@@ -49,7 +50,6 @@ public:
 		}
 
 		if (jump) {
-
 			Point* ps3 = Game::GetPlayerPosition();
 			if (psOldBeforeJump != NULL && psOldBeforeJump->y > transform->position.y) {
 			}
@@ -99,13 +99,15 @@ public:
 
 				break;
 			case SDLK_SPACE:
+				if (!hasCollision)
+				{
+					jump = false;
+				}
 				if (!jump && !Game::cCol()) {
-					 
 					timeOld = getTime();
 					timeC = getTime();
 					jump = true;
 				}
-
 				break;
 			default:
 				break;
@@ -139,19 +141,15 @@ public:
 
 		if (Game::cCol()) {
 			Point* ps2 = Game::GetPlayerPosition();
-			//transform->velocity.x = 0;
-			//transform->velocity.y = 0;
 
 			if (psOld != NULL) {
-				//Game::backToPriorPosition(psOld->x, psOld->y);
+
 				transform->position.x = psOld->x;
 				
 				transform->position.y = psOld->y;
 
 				auto velMirror = transform-> velocity.x * -1;
-				transform->velocity.x = velMirror;
-	
-				transform->velocity.x = velMirror;
+				transform->velocity.x = velMirror / 1.2;
 			}
 
 			return;
@@ -161,7 +159,6 @@ public:
 			transform->position.y += q;
 		
 		}
-
 
 	}
 

@@ -2,12 +2,15 @@
 #include "game.hpp"
 #include "TextureManager.h"
 #include "tilemapObj.h"
+#include "ParticleExample.h"
 #include "ECS/Components.h"
 #include "vectorHandler.h"
 #include "Collision.h"
 #include <fstream>
 #include "inputHandler.h"
-#include <vector>
+#include "ParticleExample.h"
+#include "ParticleSystem.h"
+
 Map* map;
 
 SDL_Renderer* Game::renderer = nullptr;
@@ -23,6 +26,8 @@ int images[25][25] = {};
 const char* mapfile = "const_assets/tileTs.png";
 bool collision = false;
 bool collisionP = false;
+
+  
 enum groupLabels : std::size_t
 {
 	groupMap,
@@ -36,6 +41,7 @@ auto& players(manager.getGroup(groupPlayers));
 auto& enemies(manager.getGroup(groupEnemies));
 std::vector<Rectagle*> blocks = {};
 
+
 Game::Game()
 {
 
@@ -44,9 +50,11 @@ Game::~Game()
 {
 
 }
-
+ParticleExample* para = new ParticleExample();
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
 {
+  
+
 	int flags = 0;
 	if (fullscreen)
 	{
@@ -63,8 +71,15 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		renderer = SDL_CreateRenderer(window, -1, 0);
 		if (renderer)
 		{
-			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+			SDL_SetRenderDrawColor(renderer, 125, 125, 255, 255);
 			std::cout << "Renderer created." << std::endl;
+
+			// create a new particle system pointer
+			para->setRenderer(renderer);                   // set the renderer
+			para->setPosition(400, 0);              // set the position
+			
+			para->setStyle(ParticleExample::SNOW);    // set the example effect
+			para->addParticles(20);
 		}
 		isRunning = true;
 
@@ -202,6 +217,7 @@ void Game::render()
 {
 	SDL_RenderClear(renderer);
 	//render-body
+	para->draw();
 	SDL_SetRenderDrawColor(renderer, 124, 184, 217, 255);
 	for (auto& t : tiles)
 	{
@@ -216,6 +232,7 @@ void Game::render()
 		e->draw();
 	}
 	SDL_RenderPresent(renderer);
+
 };
 void Game::clean()
 {
@@ -223,6 +240,7 @@ void Game::clean()
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+	delete para;
 };
 
 void Game::AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind)
