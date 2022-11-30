@@ -20,7 +20,7 @@ public:
 	long timeC;
 	long timeOld;
 	bool jump = false;
-
+	bool gravity = false;
 	void init()override
 	{
 		transform = &entity->getComponent<TransformComponent>();
@@ -30,6 +30,7 @@ public:
 
 		bool hasCollision = Game::HasCollision(transform->position.x, transform->position.y);
 		bool hasCollisionP = Game::HasCollisionP(transform->position.x, transform->position.y);
+		bool overWrite = false;
 		if (!hasCollision) {
 			psOld = Game::GetPlayerPosition();
 		}
@@ -37,11 +38,16 @@ public:
 		timeC = getTime();
 	
 		long timeF = getDurationInMilisecons(timeOld, timeC);
+		if (psOld + 3? hasCollision : true)
+		{
+			transform->velocity.y = -(transform->velocity.y);
 
-		if (timeF > 0 && jump)
+			overWrite = true;
+		}
+		if (!overWrite && timeF > 0 && jump)
 		{
 			if (timeF > 0 && timeF <= 300) {
-				transform->position.y -= 30 * timeF / 600;
+				transform->position.y -= 30.0f  * timeF / 600.0f;
 			}
 
 			if (timeF >= 400 || timeF == 0) {
@@ -52,6 +58,12 @@ public:
 		if (jump) {
 			Point* ps3 = Game::GetPlayerPosition();
 			if (psOldBeforeJump != NULL && psOldBeforeJump->y > transform->position.y) {
+			}
+
+			if (hasCollision)
+			{
+				transform->position.y += 30.0f * timeF / 600.0f;
+				jump = false;
 			}
 		}
 		else {
@@ -145,9 +157,7 @@ public:
 			if (psOld != NULL) {
 
 				transform->position.x = psOld->x;
-				
 				transform->position.y = psOld->y;
-
 				auto velMirror = transform-> velocity.x * -1;
 				transform->velocity.x = velMirror / 1.2;
 			}
@@ -155,8 +165,8 @@ public:
 			return;
 		}
 		else if (!Game::cColP()) {
-			auto q = 2 + timeF / 650;
-			transform->position.y += q;
+			auto pGravity = 2 + timeF / 650;
+			transform->position.y += pGravity;
 		
 		}
 
