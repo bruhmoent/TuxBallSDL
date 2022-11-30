@@ -1,7 +1,7 @@
 <h1>TUXBALL</h1>
 
 
-This project is currently under heavy development. Right now all you can play around is the base engine of the game.
+This project is currently under heavy development, which means it's still bare-bones.
 
 <b>About this project:</b>
 
