@@ -2,12 +2,15 @@
 #include "game.hpp"
 #include "TextureManager.h"
 #include "tilemapObj.h"
+#include "ParticleExample.h"
 #include "ECS/Components.h"
 #include "vectorHandler.h"
 #include "Collision.h"
 #include <fstream>
 #include "inputHandler.h"
-#include <vector>
+#include "ParticleExample.h"
+#include "ParticleSystem.h"
+
 Map* map;
 
 SDL_Renderer* Game::renderer = nullptr;
@@ -20,8 +23,11 @@ std::vector<ColliderComponent*> Game::colliders;
 auto& player(manager.addEntity());
 SDL_Rect Game::camera = { 0,0,800,640 };
 int images[25][25] = {};
-const char* mapfile = "const_assets/tiles.png";
+const char* mapfile = "const_assets/tileTs.png";
 bool collision = false;
+bool collisionP = false;
+
+  
 enum groupLabels : std::size_t
 {
 	groupMap,
@@ -35,6 +41,7 @@ auto& players(manager.getGroup(groupPlayers));
 auto& enemies(manager.getGroup(groupEnemies));
 std::vector<Rectagle*> blocks = {};
 
+
 Game::Game()
 {
 
@@ -43,9 +50,11 @@ Game::~Game()
 {
 
 }
-
+ParticleExample* para = new ParticleExample();
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
 {
+  
+
 	int flags = 0;
 	if (fullscreen)
 	{
@@ -62,8 +71,15 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 		renderer = SDL_CreateRenderer(window, -1, 0);
 		if (renderer)
 		{
-			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+			SDL_SetRenderDrawColor(renderer, 125, 125, 255, 255);
 			std::cout << "Renderer created." << std::endl;
+
+			// create a new particle system pointer
+			para->setRenderer(renderer);                   // set the renderer
+			para->setPosition(400, 0);              // set the position
+			
+			para->setStyle(ParticleExample::SNOW);    // set the example effect
+			para->addParticles(20);
 		}
 		isRunning = true;
 
@@ -124,8 +140,38 @@ bool Game::HasCollision(int xpos, int ypos) {
 
 }
 
+bool Game::HasCollisionP(int xpos, int ypos) {
+
+	SDL_Rect* p = new SDL_Rect;
+	p->x = xpos;
+	p->y = ypos;
+	p->w = 64;
+	p->h = 64;
+
+	for (auto i : blocks)
+	{
+		SDL_Rect* b = new SDL_Rect;
+		b->x = i->x;
+		b->y = i->y - 3;
+		b->w = i->w;
+		b->h = i->h;
+		bool colision = SDL_HasIntersection(p, b);
+
+		if (colision)
+		{
+			return true;
+		}
+	}
+	return false;
+
+}
+
 bool Game::cCol() {
 	return collision;
+}
+
+bool Game::cColP() {
+	return collisionP;
 }
 void Game::uCol() {
 	collision = false;
@@ -136,15 +182,22 @@ void Game::update()
 	manager.refresh();
 	manager.update();
 	Vector2D playerPos = player.getComponent<TransformComponent>().position;
-	//std::cout << "Player position: " << playerPos;
 	if (HasCollision(player.getComponent<TransformComponent>().position.x, player.getComponent<TransformComponent>().position.y))
 	{
 		player.getComponent<TransformComponent>().position = playerPos;
-		//std::cout << "\nCollision.\n" << cq;
 		collision = true;
 	}
 	else {
 		collision = false;
+	}
+	if (HasCollisionP(player.getComponent<TransformComponent>().position.x, player.getComponent<TransformComponent>().position.y))
+	{
+		player.getComponent<TransformComponent>().position = playerPos;
+		//std::cout << "\nCollision.\n" << cq;
+		collisionP = true;
+	}
+	else {
+		collisionP = false;
 	}
 	camera.x = player.getComponent<TransformComponent>().position.x - 400;
 	camera.y = player.getComponent<TransformComponent>().position.y - 320;
@@ -158,15 +211,14 @@ void Game::update()
 	if (camera.y > camera.h)
 		camera.y = camera.h;
 
-	//std::cout << player.getComponent<TransformComponent>().position.x;
-
 };
 
 void Game::render()
 {
 	SDL_RenderClear(renderer);
 	//render-body
-
+	para->draw();
+	SDL_SetRenderDrawColor(renderer, 124, 184, 217, 255);
 	for (auto& t : tiles)
 	{
 		t->draw();
@@ -180,6 +232,7 @@ void Game::render()
 		e->draw();
 	}
 	SDL_RenderPresent(renderer);
+
 };
 void Game::clean()
 {
@@ -187,6 +240,7 @@ void Game::clean()
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+	delete para;
 };
 
 void Game::AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind)
@@ -199,7 +253,6 @@ void Game::AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kin
 	auto& tile2(tile.getComponent<TileComponent>());
 
 	images[y][x] = kind;
-	//tile2.position
 	int h = 9;
 }
 

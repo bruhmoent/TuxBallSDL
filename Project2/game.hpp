@@ -22,8 +22,10 @@ public:
 	static std::vector<ColliderComponent*> colliders;
 	static void AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind);
 	static bool HasCollision(int xpos, int ypos);
+	static bool HasCollisionP(int xpos, int ypos);
 	static SDL_Rect camera;
 	static bool cCol();
+	static bool cColP();
 	static void uCol();
 	static void backToPriorPosition(float x, float y);
 	static Point* GetPlayerPosition();

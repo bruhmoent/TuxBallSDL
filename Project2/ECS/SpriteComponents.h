@@ -2,6 +2,7 @@
 #include "Components.h"
 #include "SDL.h"
 #include "../TextureManager.h"
+#include "animationHandle.h"
 class SpriteComponent : public Component
 {
 private:
@@ -10,6 +11,8 @@ private:
 	SDL_Rect srcRect, destRect;
 
 public:
+
+
 	SpriteComponent() = default;
 	SpriteComponent(const char* path)
 	{
@@ -39,6 +42,7 @@ public:
 		destRect.y = static_cast<int>(transform->position.y) - Game::camera.y;
 		destRect.w = transform->width * transform->scale;
 		destRect.h = transform->height * transform->scale;
+
 	}
 
 	void draw() override
