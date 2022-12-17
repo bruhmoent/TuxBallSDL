@@ -15,6 +15,7 @@ public:
 	Point* psOldBeforeJump;
 	long timeC;
 	long timeOld;
+	bool duration;
 	bool jump = false;
 	void init()override
 	{
@@ -26,18 +27,18 @@ public:
 			Point* ps2 = Game::GetPlayerPosition();
 			if (psOld != NULL) {
 				transform->position.x = psOld->x;
-				transform->position.y = psOld->y;
+				if (!duration)	{ transform->position.y = psOld->y - 0.5f; }
+				else { transform->position.y = psOld->y + 0.5f; }
 				auto velMirror = transform->velocity.x * -1.0f;
 				transform->velocity.x = velMirror / 1.5f;
 			}
 			return;
 		}
-		bool hasCollision = Game::HasCollision(transform->position.x, transform->position.y);
-		bool hasCollisionP = Game::HasCollisionP(transform->position.x, transform->position.y);
+		bool hasCollision = Game::HasCollision((int)transform->position.x, (int)transform->position.y);
+		bool hasCollisionP = Game::HasCollisionP((int)transform->position.x, (int)transform->position.y);
 		if (hasCollision) {
 			transform->velocity.x = 0.0f;
-			if(transform->velocity.x >= 1)
-		    transform->velocity.y = 0.0f;
+			transform->velocity.y = 0.0f;
 		}
 		bool overWrite = false;
 		if (!hasCollision) {
@@ -59,6 +60,7 @@ public:
 			}
 		}
 		if (jump) {
+			duration = true;
 			Point* ps3 = Game::GetPlayerPosition();
 			if (hasCollision)
 			{
@@ -68,6 +70,7 @@ public:
 		}
 		else {
 			psOldBeforeJump = Game::GetPlayerPosition();
+			duration = false;
 		}
 		if (Game::event.type == SDL_KEYDOWN) {
 			if (hasCollision) {
@@ -75,7 +78,7 @@ public:
 			}
 			switch (Game::event.key.keysym.sym) {
 			case SDLK_a:
-				hasCollision = Game::HasCollision(transform->position.x - 5, transform->position.y);
+				hasCollision = Game::HasCollision((int)transform->position.x - 5, (int)transform->position.y);
 				if (hasCollision) {
 					transform->velocity.x = 0.0f;
 					break;
@@ -86,7 +89,7 @@ public:
 				}
 				break;
 			case SDLK_d:
-				hasCollision = Game::HasCollision(transform->position.x + 5, transform->position.y);
+				hasCollision = Game::HasCollision((int)transform->position.x + 5, (int)transform->position.y);
 				if (hasCollision) {
 					transform->velocity.x = 0.0f;
 					break;
