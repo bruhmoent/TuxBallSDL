@@ -18,8 +18,8 @@ public:
 	TileComponent(int srcX, int srcY, int xpos, int ypos, const char* path)
 	{
 		texture = TextureManager::LoadTexture(path);
-		position.x = xpos;
-		position.y = ypos;
+		position.x = (float)xpos;
+		position.y = (float)ypos;
 		srcRect.x = srcX;
 		srcRect.y = srcY;
 
@@ -33,8 +33,8 @@ public:
 
 	void update()override
 	{
-		destRect.x = position.x - Game::camera.x;
-		destRect.y = position.y - Game::camera.y;
+		destRect.x = (int)position.x - Game::camera.x;
+		destRect.y = (int)position.y - Game::camera.y;
 	}
 	void draw()override
 	{

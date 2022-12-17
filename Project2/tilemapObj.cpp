@@ -2,13 +2,9 @@
 #include "game.hpp"
 #include <fstream>
 #include <iostream>
-Map::Map()
-{
+Map::Map(){};
+Map::~Map() {}
 
-};
-Map::~Map() {
-
-}
 std::vector<Rectagle*> Map::loadMap(std::string path, int sizeX, int sizeY)
 {
 	std::vector<Rectagle*> blocks;
@@ -24,7 +20,6 @@ std::vector<Rectagle*> Map::loadMap(std::string path, int sizeX, int sizeY)
 		{
 
 			mapFile.get(c);
-			std::cout << "" << c << " ";
 			int block = atoi(&c);
 			srcY = atoi(&c) * 32;
 

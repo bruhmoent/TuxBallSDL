@@ -1,8 +1,6 @@
-
 #include "game.hpp"
 #include "TextureManager.h"
 #include "tilemapObj.h"
-#include "ParticleExample.h"
 #include "ECS/Components.h"
 #include "vectorHandler.h"
 #include "Collision.h"
@@ -19,14 +17,12 @@ Manager manager;
 
 SDL_Event Game::event;
 std::vector<ColliderComponent*> Game::colliders;
-
 auto& player(manager.addEntity());
 SDL_Rect Game::camera = { 0,0,800,640 };
 int images[25][25] = {};
 const char* mapfile = "const_assets/tileTs.png";
 bool collision = false;
 bool collisionP = false;
-
   
 enum groupLabels : std::size_t
 {
@@ -42,19 +38,11 @@ auto& enemies(manager.getGroup(groupEnemies));
 std::vector<Rectagle*> blocks = {};
 
 
-Game::Game()
-{
-
-}
-Game::~Game()
-{
-
-}
+Game::Game(){}
+Game::~Game(){}
 ParticleExample* para = new ParticleExample();
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen)
 {
-  
-
 	int flags = 0;
 	if (fullscreen)
 	{
@@ -63,22 +51,16 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
 	{
-		std::cout << "Sub-game initalized!" << std::endl;
 		window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
-		if (window) {
-			std::cout << "Window created." << std::endl;
-		}
 		renderer = SDL_CreateRenderer(window, -1, 0);
 		if (renderer)
 		{
 			SDL_SetRenderDrawColor(renderer, 125, 125, 255, 255);
-			std::cout << "Renderer created." << std::endl;
 
-			// create a new particle system pointer
-			para->setRenderer(renderer);                   // set the renderer
-			para->setPosition(400, 0);              // set the position
+			para->setRenderer(renderer);
+			para->setPosition(400, 0); 
 			
-			para->setStyle(ParticleExample::SNOW);    // set the example effect
+			para->setStyle(ParticleExample::SNOW);
 			para->addParticles(20);
 		}
 		isRunning = true;
@@ -86,14 +68,12 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 		map = new Map();
 
-		//Usage of ECS.h
 		blocks = Map::loadMap("const_assets/map3.txt", 25, 20);
 		player.addComponent<TransformComponent>(2);
 		player.addComponent<SpriteComponent>("sprites/tuxball.png");
 		player.addComponent<KeyboardController>();
 		player.addComponent<ColliderComponent>("player");
 		player.addGroup(groupPlayers);
-
 
 		player.addGroup(groupMap);
 	}
@@ -105,7 +85,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
 void Game::handleEvents()
 {
-
 	SDL_PollEvent(&event);
 	switch (event.type) {
 	case SDL_QUIT:
@@ -130,7 +109,6 @@ bool Game::HasCollision(int xpos, int ypos) {
 		b->w = i->w;
 		b->h = i->h;
 		bool colision = SDL_HasIntersection(p, b);
-
 		if (colision)
 		{
 			return true;
@@ -156,14 +134,12 @@ bool Game::HasCollisionP(int xpos, int ypos) {
 		b->w = i->w;
 		b->h = i->h;
 		bool colision = SDL_HasIntersection(p, b);
-
 		if (colision)
 		{
 			return true;
 		}
 	}
 	return false;
-
 }
 
 bool Game::cCol() {
@@ -178,7 +154,6 @@ void Game::uCol() {
 }
 void Game::update()
 {
-	int cq = 1;
 	manager.refresh();
 	manager.update();
 	Vector2D playerPos = player.getComponent<TransformComponent>().position;
@@ -193,15 +168,13 @@ void Game::update()
 	if (HasCollisionP(player.getComponent<TransformComponent>().position.x, player.getComponent<TransformComponent>().position.y))
 	{
 		player.getComponent<TransformComponent>().position = playerPos;
-		//std::cout << "\nCollision.\n" << cq;
 		collisionP = true;
 	}
 	else {
 		collisionP = false;
 	}
-	camera.x = player.getComponent<TransformComponent>().position.x - 400;
-	camera.y = player.getComponent<TransformComponent>().position.y - 320;
-
+	camera.x = int(player.getComponent<TransformComponent>().position.x - 400.0f);
+	camera.y = int(player.getComponent<TransformComponent>().position.y - 320.0f);
 	if (camera.x < 0)
 		camera.x = 0;
 	if (camera.y < 0)
@@ -216,7 +189,7 @@ void Game::update()
 void Game::render()
 {
 	SDL_RenderClear(renderer);
-	//render-body
+
 	para->draw();
 	SDL_SetRenderDrawColor(renderer, 124, 184, 217, 255);
 	for (auto& t : tiles)

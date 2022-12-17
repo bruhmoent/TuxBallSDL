@@ -16,7 +16,6 @@ public:
 	void update();
 	void render();
 	void clean();
-
 	static SDL_Renderer* renderer;
 	static SDL_Event event;
 	static std::vector<ColliderComponent*> colliders;
@@ -29,12 +28,11 @@ public:
 	static void uCol();
 	static void backToPriorPosition(float x, float y);
 	static Point* GetPlayerPosition();
-
 	bool running() {
 		return isRunning;
 	};
+
 private:
-	int cnt = 0;
 	bool isRunning;
 	SDL_Window* window;
 };	

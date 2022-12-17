@@ -152,6 +152,8 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="animationHandle.cpp" />
+    <ClCompile Include="ParticleExample.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="Rectagle.cpp" />
     <ClCompile Include="TextureManager.cpp" />
@@ -171,6 +173,8 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="inputHandler.h" />
     <ClInclude Include="animationHandle.h" />
+    <ClInclude Include="ParticleExample.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="PositionComponent.h" />
     <ClInclude Include="Rectagle.h" />
@@ -183,6 +187,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="TuxBall.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="fire.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
