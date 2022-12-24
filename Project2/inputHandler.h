@@ -27,7 +27,6 @@ class KeyboardController : public Component
 {
 public:
 	Rectagle* rectangle;
-
 	char zero = '0';
 	Map* map;
 	TransformComponent* transform;
