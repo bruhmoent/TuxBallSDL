@@ -1,3 +1,14 @@
+//  TuxBall
+//  Copyright (C) 2022 bruhmoent
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #pragma once
 #define Game_hpp
 #include <stdio.h>
@@ -6,6 +17,8 @@
 #include <iostream>
 #include <vector>
 #include "Point.h"
+#include "Rectagle.h"
+
 class ColliderComponent;
 class Game {
 public:
@@ -16,7 +29,6 @@ public:
 	void update();
 	void render();
 	void clean();
-
 	static SDL_Renderer* renderer;
 	static SDL_Event event;
 	static std::vector<ColliderComponent*> colliders;
@@ -29,12 +41,13 @@ public:
 	static void uCol();
 	static void backToPriorPosition(float x, float y);
 	static Point* GetPlayerPosition();
-
+	static void AddBlock(Rectagle* rectangle);
+	static Point* GetCameraPosition();
 	bool running() {
 		return isRunning;
 	};
+
 private:
-	int cnt = 0;
 	bool isRunning;
 	SDL_Window* window;
 };	
