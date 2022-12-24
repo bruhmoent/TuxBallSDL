@@ -119,13 +119,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\bar12\source\repos\Project2\Project2\SDL2_image-2.0.1\include;C:\Users\bar12\Downloads\SDL2-2.24.0\SDL2-2.24.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\bar12\source\repos\Project2\Project2\SDL2_image-2.0.1\include;C:\Users\bar12\Downloads\SDL2-2.24.0\SDL2-2.24.0\include;C:\Users\bar12\source\repos\TuxBall\TuxBallSDL\Project2\SDL2_mixer-2.0.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\Users\bar12\Downloads\SDL2-devel-2.24.0-VC\SDL2-2.24.0\lib\x64\SDL2.lib;C:\Users\bar12\Downloads\SDL2-devel-2.24.0-VC\SDL2-2.24.0\lib\x64\SDL2main.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>C:\Users\bar12\Downloads\SDL2-devel-2.24.0-VC\SDL2-2.24.0\lib\x64\SDL2.lib;C:\Users\bar12\Downloads\SDL2-devel-2.24.0-VC\SDL2-2.24.0\lib\x64\SDL2main.lib;SDL2_image.lib;C:\Users\bar12\source\repos\TuxBall\TuxBallSDL\Project2\SDL2_mixer-2.0.0\lib\x64\SDL2_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\bar12\source\repos\Project2\Project2\SDL2_image-2.0.1\lib\x64;C:\Users\bar12\Downloads\SDL2-devel-2.24.0-VC\SDL2-2.24.0\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

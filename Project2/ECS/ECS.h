@@ -1,5 +1,15 @@
-#pragma once
+//  TuxBall
+//  Copyright (C) 2022 bruhmoent
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#pragma once
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -52,10 +62,7 @@ private:
 		ComponentBitSet componentBitSet;
 		GroupBitSet groupBitSet;
 public:
-	Entity(Manager& mManager) : manager(mManager)
-	{
-
-	}
+	Entity(Manager& mManager) : manager(mManager) {}
 	void update() 
 	{
 		for (auto& c : components) c->update();
