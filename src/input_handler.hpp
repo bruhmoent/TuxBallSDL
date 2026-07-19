@@ -14,7 +14,7 @@
 #include "ECS/ECS.h"
 #include "game.hpp"
 #include "rectangle.hpp"
-#include "tilemap_object.hpp"
+#include "level_data.hpp"
 #include <chrono>
 #include <cmath>
 #include <iostream>
@@ -27,7 +27,7 @@ class KeyboardController : public Component
 public:
   Rectangle* rectangle;
   char zero = '0';
-  Map* map;
+  LevelData* map;
   TransformComponent* transform;
   Point* psOld;
   Point* psOldBeforeJump;

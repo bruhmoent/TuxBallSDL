@@ -9,19 +9,21 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#ifndef LEVEL_DATA_HPP
+#define LEVEL_DATA_HPP
+
 #include "rectangle.hpp"
 #include <string>
 #include <vector>
-class Map
+class LevelData
 {
 public:
-  Map();
-  ~Map();
-  static std::vector<Rectangle*> loadMap(std::string path, int sizeX, int sizeY);
-  static std::vector<Rectangle*> dynamicLoad(std::vector<Rectangle*> blocks,
+  static std::vector<Rectangle*> load_level(std::string path, int sizeX, int sizeY);
+  static std::vector<Rectangle*> dynamic_load(std::vector<Rectangle*> blocks,
                                             int sizeX,
                                             int sizeY);
 
 private:
 };
+
+#endif // LEVEL_DATA_HPP

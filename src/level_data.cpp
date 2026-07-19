@@ -1,26 +1,22 @@
-#include "tilemap_object.hpp"
+#include "level_data.hpp"
 #include "game.hpp"
-#include <fstream>
-#include <iostream>
-#include <sstream>
-#include <string>
 
-Map::Map() {};
-Map::~Map() {}
+#include <fstream>
+#include <sstream>
 
 std::vector<Rectangle*>
-Map::loadMap(std::string path, int sizeX, int sizeY)
+LevelData::load_level(std::string path, int sizeX, int sizeY)
 {
-  std::vector<Rectangle*> blocks;
-  std::ifstream mapFile(path);
-  if (!mapFile.is_open()) {
+  std::vector<Rectangle*> tiles;
+  std::ifstream level_file(path);
+  if (!level_file.is_open()) {
     std::cerr << "Failed to open map file: " << path << std::endl;
-    return blocks;
+    return tiles;
   }
 
   std::string line;
   int y = 0;
-  while (std::getline(mapFile, line) && y < sizeY) {
+  while (std::getline(level_file, line) && y < sizeY) {
     if (line.empty())
       continue;
 
@@ -34,32 +30,32 @@ Map::loadMap(std::string path, int sizeX, int sizeY)
       }
 
       if (!cell.empty()) {
-        int block = std::stoi(cell);
-        int srcX = (block % 10) * 32;
-        int srcY = (block / 10) * 32;
+        int tile = std::stoi(cell);
+        int srcX = (tile % 10) * 32;
+        int srcY = (tile / 10) * 32;
 
-        Game::AddTile(srcX, srcY, x * 64, y * 64, x, y, block);
+        Game::AddTile(srcX, srcY, x * 64, y * 64, x, y, tile);
 
-        if (block == 0) {
+        if (tile == 0) {
           Rectangle* rect = new Rectangle;
           rect->x = x * 64;
           rect->y = y * 64;
           rect->w = 64;
           rect->h = 64;
-          blocks.push_back(rect);
+          tiles.push_back(rect);
         }
       }
       x++;
     }
     y++;
   }
-  mapFile.close();
+  level_file.close();
 
-  return blocks;
+  return tiles;
 }
 
 std::vector<Rectangle*>
-Map::dynamicLoad(std::vector<Rectangle*> blocks, int sizeX, int sizeY)
+LevelData::dynamic_load(std::vector<Rectangle*> blocks, int sizeX, int sizeY)
 {
   Rectangle* rect = new Rectangle;
   rect->x = sizeX * 64;

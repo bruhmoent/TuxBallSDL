@@ -21,10 +21,10 @@
 #include "input_handler.hpp"
 #include "rectangle.hpp"
 #include "texture_manager.hpp"
-#include "tilemap_object.hpp"
+#include "level_data.hpp"
 #include "vector_math.hpp"
 
-Map* map;
+LevelData* map;
 SDL_Renderer* Game::renderer = nullptr;
 Manager manager;
 SDL_Event Game::event;
@@ -90,8 +90,8 @@ Game::init(const char* title,
     std::string map_path = (std::filesystem::path(Config::get_project_root()) /
                             "assets" / "levels" / "map3.txt")
                              .string();
-    map = new Map();
-    blocks = Map::loadMap(map_path, 25, 20);
+    map = new LevelData();
+    blocks = LevelData::load_level(map_path, 25, 20);
 
     player.addComponent<TransformComponent>(2);
     std::string player_sprite_path =
