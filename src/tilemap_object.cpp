@@ -8,10 +8,10 @@
 Map::Map() {};
 Map::~Map() {}
 
-std::vector<Rectagle*>
+std::vector<Rectangle*>
 Map::loadMap(std::string path, int sizeX, int sizeY)
 {
-  std::vector<Rectagle*> blocks;
+  std::vector<Rectangle*> blocks;
   std::ifstream mapFile(path);
   if (!mapFile.is_open()) {
     std::cerr << "Failed to open map file: " << path << std::endl;
@@ -41,7 +41,7 @@ Map::loadMap(std::string path, int sizeX, int sizeY)
         Game::AddTile(srcX, srcY, x * 64, y * 64, x, y, block);
 
         if (block == 0) {
-          Rectagle* rect = new Rectagle;
+          Rectangle* rect = new Rectangle;
           rect->x = x * 64;
           rect->y = y * 64;
           rect->w = 64;
@@ -58,10 +58,10 @@ Map::loadMap(std::string path, int sizeX, int sizeY)
   return blocks;
 }
 
-std::vector<Rectagle*>
-Map::dynamicLoad(std::vector<Rectagle*> blocks, int sizeX, int sizeY)
+std::vector<Rectangle*>
+Map::dynamicLoad(std::vector<Rectangle*> blocks, int sizeX, int sizeY)
 {
-  Rectagle* rect = new Rectagle;
+  Rectangle* rect = new Rectangle;
   rect->x = sizeX * 64;
   rect->y = sizeY * 64;
   rect->w = 64;

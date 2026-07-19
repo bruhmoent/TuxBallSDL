@@ -21,12 +21,11 @@
 #include <thread>
 #include <time.h>
 #include <vector>
-#include <windows.h>
 
 class KeyboardController : public Component
 {
 public:
-  Rectagle* rectangle;
+  Rectangle* rectangle;
   char zero = '0';
   Map* map;
   TransformComponent* transform;
@@ -37,10 +36,12 @@ public:
   bool duration;
   int blockX, blockY = 0;
   bool jump = false;
+
   void init() override
   {
     transform = &entity->getComponent<TransformComponent>();
   }
+
   void update() override
   {
     int cameraX = int(Game::GetCameraPosition()->x);
@@ -60,6 +61,7 @@ public:
       }
       return;
     }
+
     bool hasCollision = Game::HasCollision((int)transform->position.x,
                                            (int)transform->position.y);
     bool hasCollisionP = Game::HasCollisionP((int)transform->position.x,
@@ -154,7 +156,7 @@ public:
                           (int)mouseX / 64,
                           (int)mouseY / 64,
                           0);
-            rectangle = new Rectagle();
+            rectangle = new Rectangle();
             rectangle->x = cameraX + (int)mouseX - (int)mouseX % 64;
             rectangle->y = cameraY + (int)mouseY - (int)mouseY % 64;
             rectangle->w = 64;

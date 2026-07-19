@@ -18,8 +18,8 @@ class Map
 public:
   Map();
   ~Map();
-  static std::vector<Rectagle*> loadMap(std::string path, int sizeX, int sizeY);
-  static std::vector<Rectagle*> dynamicLoad(std::vector<Rectagle*> blocks,
+  static std::vector<Rectangle*> loadMap(std::string path, int sizeX, int sizeY);
+  static std::vector<Rectangle*> dynamicLoad(std::vector<Rectangle*> blocks,
                                             int sizeX,
                                             int sizeY);
 

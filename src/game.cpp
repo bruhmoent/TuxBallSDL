@@ -47,7 +47,7 @@ enum groupLabels : std::size_t
 auto& tiles(manager.getGroup(groupMap));
 auto& players(manager.getGroup(groupPlayers));
 auto& enemies(manager.getGroup(groupEnemies));
-std::vector<Rectagle*> blocks = {};
+std::vector<Rectangle*> blocks = {};
 
 ParticleExample* para = new ParticleExample();
 
@@ -314,7 +314,7 @@ Game::AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind)
 
 // TO DO: Implement a RemoveTile function
 void
-Game::AddBlock(Rectagle* rectangle)
+Game::AddBlock(Rectangle* rectangle)
 {
   blocks.push_back(rectangle);
 }
