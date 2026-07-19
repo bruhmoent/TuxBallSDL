@@ -30,6 +30,7 @@ public:
       SDL_DestroyTexture(texture);
     }
   }
+
   void setTex(const char* path)
   {
     if (texture) {
@@ -37,6 +38,7 @@ public:
     }
     texture = TextureManager::LoadTexture(path);
   }
+
   void init() override
   {
     transform = &entity->getComponent<TransformComponent>();
@@ -44,6 +46,7 @@ public:
     srcRect.w = transform->width;
     srcRect.h = transform->height;
   }
+
   void update() override
   {
     destRect.x = static_cast<int>(transform->position.x) - Game::camera.x;

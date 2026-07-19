@@ -9,6 +9,9 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+#include <SDL3_mixer/SDL_mixer.h>
+#include <fstream>
+
 #include "game.hpp"
 #include "ECS/Components.h"
 #include "ParticleExample.h"
@@ -19,9 +22,7 @@
 #include "rectangle.hpp"
 #include "texture_manager.hpp"
 #include "tilemap_object.hpp"
-#include "vectorHandler.h"
-#include <SDL3_mixer/SDL_mixer.h>
-#include <fstream>
+#include "vector_math.hpp"
 
 Map* map;
 SDL_Renderer* Game::renderer = nullptr;

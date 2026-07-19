@@ -9,7 +9,7 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "vectorHandler.h"
+#include "vector_math.hpp"
 
 Vector2D::Vector2D()
 {
@@ -30,6 +30,7 @@ Vector2D::Add(const Vector2D& vec)
   this->y += vec.y;
   return *this;
 };
+
 Vector2D&
 Vector2D::Substract(const Vector2D& vec)
 {
@@ -37,6 +38,7 @@ Vector2D::Substract(const Vector2D& vec)
   this->y -= vec.y;
   return *this;
 };
+
 Vector2D&
 Vector2D::Multiply(const Vector2D& vec)
 {
@@ -44,6 +46,7 @@ Vector2D::Multiply(const Vector2D& vec)
   this->y *= vec.y;
   return *this;
 };
+
 Vector2D&
 Vector2D::Divide(const Vector2D& vec)
 {
@@ -67,6 +70,7 @@ Vector2D::Zero()
   this->y = 0;
   return *this;
 }
+
 Vector2D&
 operator+(Vector2D& v1, const Vector2D& v2)
 {
@@ -96,16 +100,19 @@ Vector2D::operator+=(const Vector2D& vec)
 {
   return this->Add(vec);
 };
+
 Vector2D&
 Vector2D::operator-=(const Vector2D& vec)
 {
   return this->Substract(vec);
 };
+
 Vector2D&
 Vector2D::operator*=(const Vector2D& vec)
 {
   return this->Multiply(vec);
 };
+
 Vector2D&
 Vector2D::operator/=(const Vector2D& vec)
 {

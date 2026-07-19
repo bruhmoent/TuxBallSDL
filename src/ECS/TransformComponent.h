@@ -11,7 +11,7 @@
 
 #pragma once
 #include "Components.h"
-#include "../vectorHandler.h"
+#include "../vector_math.hpp"
 
 class TransformComponent : public Component
 {
