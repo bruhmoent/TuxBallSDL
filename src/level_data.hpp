@@ -12,18 +12,22 @@
 #ifndef LEVEL_DATA_HPP
 #define LEVEL_DATA_HPP
 
-#include "rectangle.hpp"
 #include <string>
 #include <vector>
+#include <memory>
+
+#include "rectangle.hpp"
+
 class LevelData
 {
 public:
-  static std::vector<Rectangle*> load_level(std::string path, int sizeX, int sizeY);
-  static std::vector<Rectangle*> dynamic_load(std::vector<Rectangle*> blocks,
-                                            int sizeX,
-                                            int sizeY);
-
-private:
+  static std::vector<std::shared_ptr<Rectangle>> load_level(std::string path,
+                                                            int sizeX,
+                                                            int sizeY);
+  static std::vector<std::shared_ptr<Rectangle>> dynamic_load(
+    std::vector<std::shared_ptr<Rectangle>> blocks,
+    int sizeX,
+    int sizeY);
 };
 
 #endif // LEVEL_DATA_HPP

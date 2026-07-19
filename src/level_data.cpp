@@ -4,10 +4,10 @@
 #include <fstream>
 #include <sstream>
 
-std::vector<Rectangle*>
+std::vector<std::shared_ptr<Rectangle>>
 LevelData::load_level(std::string path, int sizeX, int sizeY)
 {
-  std::vector<Rectangle*> tiles;
+  std::vector<std::shared_ptr<Rectangle>> tiles;
   std::ifstream level_file(path);
   if (!level_file.is_open()) {
     std::cerr << "Failed to open map file: " << path << std::endl;
@@ -34,10 +34,10 @@ LevelData::load_level(std::string path, int sizeX, int sizeY)
         int srcX = (tile % 10) * 32;
         int srcY = (tile / 10) * 32;
 
-        Game::AddTile(srcX, srcY, x * 64, y * 64, x, y, tile);
+        Game::get().AddTile(srcX, srcY, x * 64, y * 64, x, y, tile);
 
         if (tile == 0) {
-          Rectangle* rect = new Rectangle;
+          auto rect = std::make_shared<Rectangle>();
           rect->x = x * 64;
           rect->y = y * 64;
           rect->w = 64;
@@ -54,10 +54,12 @@ LevelData::load_level(std::string path, int sizeX, int sizeY)
   return tiles;
 }
 
-std::vector<Rectangle*>
-LevelData::dynamic_load(std::vector<Rectangle*> blocks, int sizeX, int sizeY)
+std::vector<std::shared_ptr<Rectangle>>
+LevelData::dynamic_load(std::vector<std::shared_ptr<Rectangle>> blocks,
+                        int sizeX,
+                        int sizeY)
 {
-  Rectangle* rect = new Rectangle;
+  auto rect = std::make_shared<Rectangle>();
   rect->x = sizeX * 64;
   rect->y = sizeY * 64;
   rect->w = 64;

@@ -21,16 +21,16 @@ main(int argc, char* argv[])
   Uint32 frame_start;
   int frame_time;
 
-  auto game = std::make_unique<Game>();
-  game->init(
+  Game& game = Game::get();
+  game.init(
     "TuxBall", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 640, false);
 
-  while (game->running()) {
+  while (game.running()) {
     frame_start = SDL_GetTicks();
 
-    game->handleEvents();
-    game->update();
-    game->render();
+    game.handleEvents();
+    game.update();
+    game.render();
 
     frame_time = SDL_GetTicks() - frame_start;
 
@@ -39,6 +39,6 @@ main(int argc, char* argv[])
     }
   }
 
-  game->clean();
+  game.clean();
   return 0;
 }

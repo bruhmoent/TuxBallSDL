@@ -13,29 +13,30 @@
 #include "ECS/Components.h"
 #include "ECS/ECS.h"
 #include "game.hpp"
-#include "rectangle.hpp"
 #include "level_data.hpp"
+#include "rectangle.hpp"
 #include <chrono>
 #include <cmath>
 #include <iostream>
 #include <thread>
-#include <time.h>
 #include <vector>
 
 class KeyboardController : public Component
 {
 public:
-  Rectangle* rectangle;
   char zero = '0';
   LevelData* map;
   TransformComponent* transform;
-  Point* psOld;
-  Point* psOldBeforeJump;
-  long timeC;
-  long timeOld;
-  bool duration;
-  int blockX, blockY = 0;
-  bool jump = false;
+
+  Point old_position{ 0.0f, 0.0f };
+  bool has_old_position = false;
+  Point old_position_before_jump{ 0.0f, 0.0f };
+
+  long current_time = 0;
+  long old_time = 0;
+  bool is_duration_active = false;
+  int block_x = 0, block_y = 0;
+  bool is_jumping = false;
 
   void init() override
   {
@@ -44,124 +45,132 @@ public:
 
   void update() override
   {
-    int cameraX = int(Game::GetCameraPosition()->x);
-    int cameraY = int(Game::GetCameraPosition()->y);
-    uint32_t currentTime = SDL_GetTicks();
-    if (Game::cCol()) {
-      Point* ps2 = Game::GetPlayerPosition();
-      if (psOld != NULL) {
-        transform->position.x = psOld->x;
-        if (!duration) {
-          transform->position.y = psOld->y - 0.5f;
+    int camera_x = int(Game::get().GetCameraPosition().x);
+    int camera_y = int(Game::get().GetCameraPosition().y);
+
+    if (Game::get().cCol()) {
+      if (has_old_position) {
+        transform->position.x = old_position.x;
+        if (!is_duration_active) {
+          transform->position.y = old_position.y - 0.5f;
         } else {
-          transform->position.y = psOld->y + 0.5f;
+          transform->position.y = old_position.y + 0.5f;
         }
-        auto velMirror = transform->velocity.x * -1.0f;
-        transform->velocity.x = velMirror / 1.5f;
+        auto vel_mirror = transform->velocity.x * -1.0f;
+        transform->velocity.x = vel_mirror / 1.5f;
       }
       return;
     }
 
-    bool hasCollision = Game::HasCollision((int)transform->position.x,
-                                           (int)transform->position.y);
-    bool hasCollisionP = Game::HasCollisionP((int)transform->position.x,
-                                             (int)transform->position.y);
-    if (hasCollision) {
+    bool has_collision = Game::get().HasCollision((int)transform->position.x,
+                                                  (int)transform->position.y);
+    bool has_platform_collision = Game::get().HasCollisionP(
+      (int)transform->position.x, (int)transform->position.y);
+
+    if (has_collision) {
       transform->velocity.x *= 0.7f;
       if (transform->velocity.x < 0.001f)
         transform->velocity.x = 0.0f;
     }
-    bool overWrite = false;
-    if (!hasCollision) {
-      psOld = Game::GetPlayerPosition();
+
+    bool overwrite = false;
+    if (!has_collision) {
+      old_position = Game::get().GetPlayerPosition();
+      has_old_position = true;
     }
-    timeC = getTime();
-    long timeF = getDurationInMilisecons(timeOld, timeC);
-    if (psOld + 3 ? hasCollision : true) {
-      overWrite = true;
+
+    current_time = get_time_ms();
+    long time_delta = get_duration_in_milliseconds(old_time, current_time);
+
+    if (has_old_position ? has_collision : true) {
+      overwrite = true;
     }
-    if (!overWrite && timeF > 0 && jump) {
-      if (timeF > 0 && timeF <= 300) {
-        transform->position.y -= 30.0f * timeF / 600.0f;
+
+    if (!overwrite && time_delta > 0 && is_jumping) {
+      if (time_delta > 0 && time_delta <= 300) {
+        transform->position.y -= 30.0f * time_delta / 600.0f;
       }
-      if (timeF >= 400 || timeF == 0) {
-        jump = false;
+      if (time_delta >= 400 || time_delta == 0) {
+        is_jumping = false;
       }
     }
-    if (jump) {
-      duration = true;
-      Point* ps3 = Game::GetPlayerPosition();
-      if (hasCollision) {
-        transform->position.y += 30.0f * timeF / 600.0f;
-        jump = false;
+
+    if (is_jumping) {
+      is_duration_active = true;
+      if (has_collision) {
+        transform->position.y += 30.0f * time_delta / 600.0f;
+        is_jumping = false;
       }
     } else {
-      psOldBeforeJump = Game::GetPlayerPosition();
-      duration = false;
+      old_position_before_jump = Game::get().GetPlayerPosition();
+      is_duration_active = false;
     }
-    if (Game::event.type == SDL_EVENT_KEY_DOWN) {
-      if (hasCollision) {
+
+    if (Game::get().event.type == SDL_EVENT_KEY_DOWN) {
+      if (has_collision) {
         transform->velocity.x = 0.0f;
       }
-      switch (Game::event.key.key) {
+      switch (Game::get().event.key.key) {
         case SDLK_A:
-          hasCollision = Game::HasCollision((int)transform->position.x - 5,
-                                            (int)transform->position.y);
-          if (hasCollision) {
+          has_collision = Game::get().HasCollision(
+            (int)transform->position.x - 5, (int)transform->position.y);
+          if (has_collision) {
             transform->velocity.x = 0.0f;
             break;
           } else {
-            transform->velocity.x = -2.0f * timeF;
-            transform->velocity.x = jump ? -1.0f : -2.0f;
+            transform->velocity.x = -2.0f * time_delta;
+            transform->velocity.x = is_jumping ? -1.0f : -2.0f;
           }
           break;
         case SDLK_D:
-          hasCollision = Game::HasCollision((int)transform->position.x + 5,
-                                            (int)transform->position.y);
-          if (hasCollision) {
+          has_collision = Game::get().HasCollision(
+            (int)transform->position.x + 5, (int)transform->position.y);
+          if (has_collision) {
             transform->velocity.x = 0.0f;
             break;
           } else {
-            transform->velocity.x = 2.0f * timeF;
-            transform->velocity.x = jump ? 1.0f : 2.0f;
+            transform->velocity.x = 2.0f * time_delta;
+            transform->velocity.x = is_jumping ? 1.0f : 2.0f;
           }
           break;
         case SDLK_SPACE:
-          if (!hasCollision) {
-            jump = false;
+          if (!has_collision) {
+            is_jumping = false;
           }
-          if (!jump && !Game::cCol()) {
-            timeOld = getTime();
-            timeC = getTime();
-            jump = true;
+          if (!is_jumping && !Game::get().cCol()) {
+            old_time = get_time_ms();
+            current_time = get_time_ms();
+            is_jumping = true;
           }
           break;
         case SDLK_X: {
-          int block = zero - '0';
-          int srcX = (block % 10) * 32;
-          int srcY = (block / 10) * 32;
-          float mouseX, mouseY;
-          SDL_GetMouseState(&mouseX, &mouseY);
-          cameraX -= cameraX % 64;
-          cameraY -= cameraY % 64;
+          int block_id = zero - '0';
+          int src_x = (block_id % 10) * 32;
+          int src_y = (block_id / 10) * 32;
+          float mouse_x, mouse_y;
+          SDL_GetMouseState(&mouse_x, &mouse_y);
+          camera_x -= camera_x % 64;
+          camera_y -= camera_y % 64;
 
-          if (abs(Game::GetPlayerPosition()->y -
-                  (cameraY + (int)mouseY - (int)mouseY % 64)) > 70 ||
-              abs(Game::GetPlayerPosition()->x -
-                  (cameraX + (int)mouseX - (int)mouseX % 64)) > 70) {
-            Game::AddTile(srcX,
-                          srcY,
-                          cameraX + (int)mouseX - (int)mouseX % 64,
-                          cameraY + (int)mouseY - (int)mouseY % 64,
-                          (int)mouseX / 64,
-                          (int)mouseY / 64,
-                          0);
-            rectangle = new Rectangle();
-            rectangle->x = cameraX + (int)mouseX - (int)mouseX % 64;
-            rectangle->y = cameraY + (int)mouseY - (int)mouseY % 64;
-            rectangle->w = 64;
-            rectangle->h = 64;
-            Game::AddBlock(rectangle);
+          if (std::abs(Game::get().GetPlayerPosition().y -
+                       (camera_y + (int)mouse_y - (int)mouse_y % 64)) > 70 ||
+              std::abs(Game::get().GetPlayerPosition().x -
+                       (camera_x + (int)mouse_x - (int)mouse_x % 64)) > 70) {
+
+            Game::get().AddTile(src_x,
+                                src_y,
+                                camera_x + (int)mouse_x - (int)mouse_x % 64,
+                                camera_y + (int)mouse_y - (int)mouse_y % 64,
+                                (int)mouse_x / 64,
+                                (int)mouse_y / 64,
+                                0);
+
+            auto new_rect = std::make_shared<Rectangle>();
+            new_rect->x = camera_x + (int)mouse_x - (int)mouse_x % 64;
+            new_rect->y = camera_y + (int)mouse_y - (int)mouse_y % 64;
+            new_rect->w = 64;
+            new_rect->h = 64;
+            Game::get().AddBlock(new_rect);
           }
           break;
         }
@@ -170,9 +179,10 @@ public:
           break;
       }
     }
-    if (Game::event.type == SDL_EVENT_KEY_UP) {
-      switch (Game::event.key.key) {
-        if (!Game::cCol()) {
+
+    if (Game::get().event.type == SDL_EVENT_KEY_UP) {
+      if (!Game::get().cCol()) {
+        switch (Game::get().event.key.key) {
           case SDLK_W:
           case SDLK_S:
             transform->velocity.y = 0.0f;
@@ -185,21 +195,20 @@ public:
             break;
         }
       }
-    } else if (!Game::cColP()) {
-      auto pGravity = 3 + timeF / 650;
-      transform->position.y += pGravity;
+    } else if (!Game::get().cColP()) {
+      auto gravity = 3 + time_delta / 650;
+      transform->position.y += gravity;
     }
   }
 
-  long getTime()
+  long get_time_ms()
   {
-    auto t = std::chrono::high_resolution_clock::now();
-    long timeS = std::chrono::duration_cast<std::chrono::milliseconds>(
-                   std::chrono::high_resolution_clock::now().time_since_epoch())
-                   .count();
-    return timeS;
+    return std::chrono::duration_cast<std::chrono::milliseconds>(
+             std::chrono::high_resolution_clock::now().time_since_epoch())
+      .count();
   }
-  long getDurationInMilisecons(long start, long stop)
+
+  long get_duration_in_milliseconds(long start, long stop)
   {
     if (start <= 0 || stop <= 0 || start >= stop) {
       return 0;

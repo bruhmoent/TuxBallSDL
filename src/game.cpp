@@ -12,27 +12,32 @@
 #include <SDL3_mixer/SDL_mixer.h>
 #include <fstream>
 
-#include "game.hpp"
 #include "ECS/Components.h"
 #include "ParticleExample.h"
 #include "ParticleSystem.h"
 #include "collision.hpp"
 #include "config.hpp"
+#include "game.hpp"
 #include "input_handler.hpp"
+#include "level_data.hpp"
 #include "rectangle.hpp"
 #include "texture_manager.hpp"
-#include "level_data.hpp"
 #include "vector_math.hpp"
 
-LevelData* map;
-SDL_Renderer* Game::renderer = nullptr;
+SINGLETON_CPP(Game);
+
+Game::Game()
+  : m_level(std::make_unique<Level>())
+  , m_renderer(nullptr)
+  , camera({ 0, 0, 800, 640 })
+  , m_is_running(true)
+  , m_window(nullptr)
+{
+}
+
 Manager manager;
-SDL_Event Game::event;
-std::vector<ColliderComponent*> Game::colliders;
 auto& player(manager.addEntity());
-SDL_Rect Game::camera = { 0, 0, 800, 640 };
 int images[25][25] = {};
-SDL_Texture* Game::mapTexture = nullptr;
 
 bool collision = false;
 bool collisionP = false;
@@ -48,9 +53,8 @@ enum groupLabels : std::size_t
 auto& tiles(manager.getGroup(groupMap));
 auto& players(manager.getGroup(groupPlayers));
 auto& enemies(manager.getGroup(groupEnemies));
-std::vector<Rectangle*> blocks = {};
 
-ParticleExample* para = new ParticleExample();
+ParticleExample* particles_snow = new ParticleExample();
 
 void
 Game::init(const char* title,
@@ -66,32 +70,18 @@ Game::init(const char* title,
   }
 
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
-    window = SDL_CreateWindow(title, width, height, flags);
-    renderer = SDL_CreateRenderer(window, nullptr);
+    m_window = SDL_CreateWindow(title, width, height, flags);
+    m_renderer = SDL_CreateRenderer(m_window, nullptr);
 
-    if (renderer) {
-      SDL_SetRenderDrawColor(renderer, 125, 125, 255, 255);
-      para->setRenderer(renderer);
-      para->setPosition(400, 0);
-      para->setStyle(ParticleExample::SNOW);
-      para->addParticles(20);
-    }
-    isRunning = true;
-
-    std::string mapfile_path =
-      (std::filesystem::path(Config::get_project_root()) / "assets" / "images" /
-       "tileTs.bmp")
-        .string();
-    mapTexture = TextureManager::LoadTexture(mapfile_path.c_str());
-    if (!mapTexture) {
-      std::cout << "CRITICAL: Failed to load map texture!" << std::endl;
+    if (m_renderer) {
+      SDL_SetRenderDrawColor(m_renderer, 125, 125, 255, 255);
+      particles_snow->setRenderer(m_renderer);
+      particles_snow->setPosition(400, 0);
+      particles_snow->setStyle(ParticleExample::SNOW);
+      particles_snow->addParticles(20);
     }
 
-    std::string map_path = (std::filesystem::path(Config::get_project_root()) /
-                            "assets" / "levels" / "map3.txt")
-                             .string();
-    map = new LevelData();
-    blocks = LevelData::load_level(map_path, 25, 20);
+    m_is_running = true;
 
     player.addComponent<TransformComponent>(2);
     std::string player_sprite_path =
@@ -129,8 +119,10 @@ Game::init(const char* title,
         SDL_DestroyProperties(props);
       }
     }
+
+  m_level->load();
   } else {
-    isRunning = false;
+    m_is_running = false;
   }
 }
 
@@ -140,7 +132,7 @@ Game::handleEvents()
   SDL_PollEvent(&event);
   switch (event.type) {
     case SDL_EVENT_QUIT:
-      isRunning = false;
+      m_is_running = false;
       break;
   }
 };
@@ -148,20 +140,11 @@ Game::handleEvents()
 bool
 Game::HasCollision(int xpos, int ypos)
 {
-  SDL_Rect* p = new SDL_Rect;
-  p->x = xpos;
-  p->y = ypos;
-  p->w = 64;
-  p->h = 64;
+  SDL_Rect p = { xpos, ypos, 64, 64 };
 
-  for (auto i : blocks) {
-    SDL_Rect* b = new SDL_Rect;
-    b->x = i->x;
-    b->y = i->y;
-    b->w = i->w;
-    b->h = i->h;
-    bool colision = SDL_HasRectIntersection(p, b);
-    if (colision) {
+  for (const auto& tile : m_level->tiles) {
+    SDL_Rect b = { tile->x, tile->y, tile->w, tile->h };
+    if (SDL_HasRectIntersection(&p, &b)) {
       return true;
     }
   }
@@ -171,21 +154,11 @@ Game::HasCollision(int xpos, int ypos)
 bool
 Game::HasCollisionP(int xpos, int ypos)
 {
+  SDL_Rect p = { xpos, ypos, 64, 64 };
 
-  SDL_Rect* p = new SDL_Rect;
-  p->x = xpos;
-  p->y = ypos;
-  p->w = 64;
-  p->h = 64;
-
-  for (auto i : blocks) {
-    SDL_Rect* b = new SDL_Rect;
-    b->x = i->x;
-    b->y = i->y - 3;
-    b->w = i->w;
-    b->h = i->h;
-    bool colision = SDL_HasRectIntersection(p, b);
-    if (colision) {
+  for (const auto& tile : m_level->tiles) {
+    SDL_Rect b = { tile->x, tile->y - 3, tile->w, tile->h };
+    if (SDL_HasRectIntersection(&p, &b)) {
       return true;
     }
   }
@@ -203,6 +176,7 @@ Game::cColP()
 {
   return collisionP;
 }
+
 void
 Game::uCol()
 {
@@ -233,7 +207,7 @@ Game::update()
   // Camera adjustment feature (mouse movement on button pressed)
   float mouseX, mouseY;
   if (SDL_GetMouseState(&mouseX, &mouseY) != 0) {
-    SDL_SetWindowRelativeMouseMode(window, true);
+    SDL_SetWindowRelativeMouseMode(m_window, true);
     camera.x =
       int(player.getComponent<TransformComponent>().position.x - 400.0f) +
       (int)mouseX - (camera.w / 2);
@@ -241,7 +215,7 @@ Game::update()
       int(player.getComponent<TransformComponent>().position.y - 320.0f) +
       (int)mouseY - (camera.h / 2);
   } else {
-    SDL_SetWindowRelativeMouseMode(window, false);
+    SDL_SetWindowRelativeMouseMode(m_window, false);
     camera.x =
       int(player.getComponent<TransformComponent>().position.x - 400.0f);
     camera.y =
@@ -260,9 +234,8 @@ Game::update()
 void
 Game::render()
 {
-  SDL_RenderClear(renderer);
-  para->draw();
-  SDL_SetRenderDrawColor(renderer, 124, 184, 217, 255);
+  SDL_RenderClear(m_renderer);
+  SDL_SetRenderDrawColor(m_renderer, 124, 184, 217, 255);
   for (auto& t : tiles) {
     t->draw();
   }
@@ -272,14 +245,14 @@ Game::render()
   for (auto& e : enemies) {
     e->draw();
   }
-  // Draw the custom cursor
 
+  particles_snow->draw();
+
+  // Draw the custom cursor
   std::string cursor_path =
     Config::get_project_root() + "/assets/images/cursor.png";
 
-  SDL_Texture* texture = IMG_LoadTexture(renderer, cursor_path.c_str());
-  // SDL_Texture* textureSnap = IMG_LoadTexture(renderer, "gridsnap.png");
-  // SDL_Rect rectSnap;
+  SDL_Texture* texture = IMG_LoadTexture(m_renderer, cursor_path.c_str());
   SDL_FRect rect;
   rect.w = 64.0f;
   rect.h = 64.0f;
@@ -287,19 +260,17 @@ Game::render()
   SDL_GetMouseState(&mouseX, &mouseY);
   rect.x = mouseX;
   rect.y = mouseY;
-  SDL_RenderTexture(renderer, texture, NULL, &rect);
-  // SDL_RenderCopy(renderer, textureSnap, NULL, &rectSnap);
-  SDL_RenderPresent(renderer);
+  SDL_RenderTexture(m_renderer, texture, NULL, &rect);
+  SDL_RenderPresent(m_renderer);
 };
 
 void
 Game::clean()
 {
-  SDL_DestroyTexture(mapTexture);
-  SDL_DestroyRenderer(renderer);
-  SDL_DestroyWindow(window);
+  SDL_DestroyRenderer(m_renderer);
+  SDL_DestroyWindow(m_window);
   SDL_Quit();
-  delete para;
+  delete particles_snow;
 };
 
 void
@@ -307,37 +278,38 @@ Game::AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind)
 {
   auto& tile(manager.addEntity());
 
-  tile.addComponent<TileComponent>(srcX, srcY, xpos, ypos, mapTexture);
+  tile.addComponent<TileComponent>(
+    srcX, srcY, xpos, ypos, m_level->tileset_texture);
 
   tile.addGroup(groupMap);
   images[y][x] = kind;
 }
 
-// TO DO: Implement a RemoveTile function
+// TODO: Implement a RemoveTile function
 void
-Game::AddBlock(Rectangle* rectangle)
+Game::AddBlock(std::shared_ptr<Rectangle> rectangle)
 {
-  blocks.push_back(rectangle);
+  m_level->tiles.push_back(rectangle);
 }
 
-Point*
+Point
 Game::GetPlayerPosition()
 {
   Vector2D vector = player.getComponent<TransformComponent>().position;
 
-  Point* point = new Point();
-  point->x = vector.x;
-  point->y = vector.y;
+  Point point;
+  point.x = vector.x;
+  point.y = vector.y;
 
   return point;
 }
 
-Point*
+Point
 Game::GetCameraPosition()
 {
-  Point* point = new Point();
-  point->x = camera.x;
-  point->y = camera.y;
+  Point point;
+  point.x = camera.x;
+  point.y = camera.y;
 
   return point;
 }

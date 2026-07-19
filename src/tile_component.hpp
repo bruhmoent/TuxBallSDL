@@ -42,8 +42,8 @@ public:
 
   void update() override
   {
-    destRect.x = (int)position.x - Game::camera.x;
-    destRect.y = (int)position.y - Game::camera.y;
+    destRect.x = (int)position.x - Game::get().camera.x;
+    destRect.y = (int)position.y - Game::get().camera.y;
   }
 
   void draw() override
@@ -51,8 +51,8 @@ public:
     if (texture) {
       TextureManager::Draw(texture, srcRect, destRect);
     } else {
-      SDL_SetRenderDrawColor(Game::renderer, 255, 0, 255, 255);
-      SDL_RenderFillRect(Game::renderer, &destRect);
+      SDL_SetRenderDrawColor(Game::get().m_renderer, 255, 0, 255, 255);
+      SDL_RenderFillRect(Game::get().m_renderer, &destRect);
     }
   }
 };
