@@ -9,10 +9,13 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
-class Point
+#ifndef POINT_HPP
+#define POINT_HPP
+
+struct Point
 {
-public:
   float x;
   float y;
 };
+
+#endif // POINT_HPP
