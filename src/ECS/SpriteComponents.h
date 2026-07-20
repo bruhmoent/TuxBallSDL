@@ -47,7 +47,7 @@ public:
     srcRect.h = transform->height;
   }
 
-  void update() override
+  void update(float dt) override
   {
     destRect.x = static_cast<int>(transform->position.x) - Game::get().camera.x;
     destRect.y = static_cast<int>(transform->position.y) - Game::get().camera.y;

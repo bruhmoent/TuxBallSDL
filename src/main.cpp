@@ -25,11 +25,21 @@ main(int argc, char* argv[])
   game.init(
     "TuxBall", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 640, false);
 
+  Uint64 last_time = SDL_GetTicksNS();
+
   while (game.running()) {
     frame_start = SDL_GetTicks();
 
-    game.handleEvents();
-    game.update();
+    Uint64 current_time = SDL_GetTicksNS();
+    float dt = (float)(current_time - last_time) / 1000000000.0f;
+    last_time = current_time;
+
+    if (dt > 0.1f) {
+      dt = 0.1f;
+    }
+
+    game.handle_events();
+    game.update(dt);
     game.render();
 
     frame_time = SDL_GetTicks() - frame_start;

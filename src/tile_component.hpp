@@ -40,7 +40,7 @@ public:
     destRect.h = 64;
   }
 
-  void update() override
+  void update(float dt) override
   {
     destRect.x = (int)position.x - Game::get().camera.x;
     destRect.y = (int)position.y - Game::get().camera.y;

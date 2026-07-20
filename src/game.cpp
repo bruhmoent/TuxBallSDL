@@ -36,7 +36,7 @@ Game::Game()
 }
 
 Manager manager;
-auto& player(manager.addEntity());
+Entity& player(manager.addEntity());
 int images[25][25] = {};
 
 bool collision = false;
@@ -127,7 +127,7 @@ Game::init(const char* title,
 }
 
 void
-Game::handleEvents()
+Game::handle_events()
 {
   SDL_PollEvent(&event);
   switch (event.type) {
@@ -140,7 +140,7 @@ Game::handleEvents()
 bool
 Game::HasCollision(int xpos, int ypos)
 {
-  SDL_Rect p = { xpos, ypos, 64, 64 };
+  SDL_Rect p = { xpos + 2, ypos + 2, 60, 60 };
 
   for (const auto& tile : m_level->tiles) {
     SDL_Rect b = { tile->x, tile->y, tile->w, tile->h };
@@ -154,11 +154,11 @@ Game::HasCollision(int xpos, int ypos)
 bool
 Game::HasCollisionP(int xpos, int ypos)
 {
-  SDL_Rect p = { xpos, ypos, 64, 64 };
+  SDL_Rect p_feet = { xpos + 10, ypos + 60, 44, 8 };
 
   for (const auto& tile : m_level->tiles) {
-    SDL_Rect b = { tile->x, tile->y - 3, tile->w, tile->h };
-    if (SDL_HasRectIntersection(&p, &b)) {
+    SDL_Rect b = { tile->x, tile->y, tile->w, tile->h };
+    if (SDL_HasRectIntersection(&p_feet, &b)) {
       return true;
     }
   }
@@ -184,25 +184,31 @@ Game::uCol()
 }
 
 void
-Game::update()
+Game::update(float dt)
 {
+  m_delta_time = dt;
+
+  auto& transform = player.getComponent<TransformComponent>();
+
+  Vector2D prev_pos = transform.position;
+
   manager.refresh();
-  manager.update();
-  Vector2D playerPos = player.getComponent<TransformComponent>().position;
-  if (HasCollision(player.getComponent<TransformComponent>().position.x,
-                   player.getComponent<TransformComponent>().position.y)) {
-    player.getComponent<TransformComponent>().position = playerPos;
-    collision = true;
-  } else {
-    collision = false;
+  manager.update(dt);
+
+  if (HasCollision(transform.position.x, prev_pos.y)) {
+    transform.position.x = prev_pos.x;
+    transform.velocity.x = 0.0f;
   }
-  if (HasCollisionP(player.getComponent<TransformComponent>().position.x,
-                    player.getComponent<TransformComponent>().position.y)) {
-    player.getComponent<TransformComponent>().position = playerPos;
-    collisionP = true;
-  } else {
-    collisionP = false;
+
+  if (HasCollision(transform.position.x, transform.position.y)) {
+    transform.position.y = prev_pos.y;
+    transform.velocity.y = 0.0f;
   }
+
+  collision = HasCollision(transform.position.x, transform.position.y);
+  collisionP = HasCollisionP(transform.position.x, transform.position.y);
+
+  particles_snow->update(dt);
 
   // Camera adjustment feature (mouse movement on button pressed)
   float mouseX, mouseY;
@@ -221,6 +227,7 @@ Game::update()
     camera.y =
       int(player.getComponent<TransformComponent>().position.y - 320.0f);
   }
+
   if (camera.x < 0)
     camera.x = 0;
   if (camera.y < 0)
@@ -229,13 +236,14 @@ Game::update()
     camera.x = camera.w;
   if (camera.y > camera.h)
     camera.y = camera.h;
-};
+}
 
 void
 Game::render()
 {
   SDL_RenderClear(m_renderer);
   SDL_SetRenderDrawColor(m_renderer, 124, 184, 217, 255);
+
   for (auto& t : tiles) {
     t->draw();
   }
@@ -274,7 +282,7 @@ Game::clean()
 };
 
 void
-Game::AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind)
+Game::add_tile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind)
 {
   auto& tile(manager.addEntity());
 
@@ -287,13 +295,13 @@ Game::AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind)
 
 // TODO: Implement a RemoveTile function
 void
-Game::AddBlock(std::shared_ptr<Rectangle> rectangle)
+Game::add_block(std::shared_ptr<Rectangle> rectangle)
 {
   m_level->tiles.push_back(rectangle);
 }
 
 Point
-Game::GetPlayerPosition()
+Game::get_player_position()
 {
   Vector2D vector = player.getComponent<TransformComponent>().position;
 
@@ -305,7 +313,7 @@ Game::GetPlayerPosition()
 }
 
 Point
-Game::GetCameraPosition()
+Game::get_camera_position()
 {
   Point point;
   point.x = camera.x;
@@ -315,7 +323,7 @@ Game::GetCameraPosition()
 }
 
 void
-Game::backToPriorPosition(float x, float y)
+Game::back_to_prior_position(float x, float y)
 {
   Vector2D vector = player.getComponent<TransformComponent>().position;
   vector.x = x;

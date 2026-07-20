@@ -34,7 +34,7 @@ LevelData::load_level(std::string path, int sizeX, int sizeY)
         int srcX = (tile % 10) * 32;
         int srcY = (tile / 10) * 32;
 
-        Game::get().AddTile(srcX, srcY, x * 64, y * 64, x, y, tile);
+        Game::get().add_tile(srcX, srcY, x * 64, y * 64, x, y, tile);
 
         if (tile == 0) {
           auto rect = std::make_shared<Rectangle>();

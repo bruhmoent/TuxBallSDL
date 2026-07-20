@@ -286,9 +286,8 @@ ParticleSystem::isFull()
 
 // ParticleSystem - MainLoop
 void
-ParticleSystem::update()
+ParticleSystem::update(float dt)
 {
-  float dt = 1.0 / 25;
   if (_isActive && _emissionRate) {
     float rate = 1.0f / _emissionRate;
     int totalParticles = _totalParticles;
@@ -428,7 +427,6 @@ ParticleSystem::draw()
     SDL_RenderTextureRotated(
       _renderer, _texture, nullptr, &r, p.rotation, nullptr, SDL_FLIP_NONE);
   }
-  update();
 }
 
 SDL_Texture*

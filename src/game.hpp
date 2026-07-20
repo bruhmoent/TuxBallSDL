@@ -34,6 +34,8 @@ SINGLETON(Game)
 public:
   Game();
   ~Game() = default;
+  void clean();
+
   void init(const char* title,
             int xpos,
             int ypos,
@@ -41,30 +43,33 @@ public:
             int height,
             bool fullscreen);
 
-  void handleEvents();
-  void update();
+  void handle_events();
+
+  void update(float dt);
   void render();
-  void clean();
-  SDL_Event event;
-  void AddTile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind);
+
+  void add_tile(int srcX, int srcY, int xpos, int ypos, int x, int y, int kind);
   bool HasCollision(int xpos, int ypos);
   bool HasCollisionP(int xpos, int ypos);
-  SDL_Rect camera;
   bool cCol();
   bool cColP();
   void uCol();
-  void backToPriorPosition(float x, float y);
-  Point GetPlayerPosition();
-  void AddBlock(std::shared_ptr<Rectangle> rectangle);
-  Point GetCameraPosition();
+  void back_to_prior_position(float x, float y);
+  Point get_player_position();
+  void add_block(std::shared_ptr<Rectangle> rectangle);
+  Point get_camera_position();
   inline bool running() { return m_is_running; };
+  inline float get_delta_time() const { return m_delta_time; }
 
   SDL_Renderer* m_renderer;
   std::vector<ColliderComponent*> m_colliders;
+  SDL_Event event;
+  SDL_Rect camera;
 private:
   bool m_is_running;
   SDL_Window* m_window;
   std::unique_ptr<Level> m_level;
+  float m_delta_time = 0.0f;
 };
 
 #endif // GAME_HPP

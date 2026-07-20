@@ -586,7 +586,7 @@ public:
   SDL_Texture* getTexture();
   void setTexture(SDL_Texture* texture);
   void draw();
-  void update();
+  void update(float dt);
 
   ParticleSystem();
   virtual ~ParticleSystem();
