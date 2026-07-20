@@ -14,7 +14,8 @@
 #include <SDL3/SDL.h>
 
 #include "ECS/ECS.h"
-#include "ECS/Components.h"
+#include "ECS/TransformComponent.h"
+#include "game.hpp"
 
 class ColliderComponent : public Component
 {

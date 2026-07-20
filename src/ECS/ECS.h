@@ -9,7 +9,9 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#pragma once
+#ifndef ECS_HPP
+#define ECS_HPP
+
 #include <algorithm>
 #include <array>
 #include <bitset>
@@ -23,12 +25,9 @@ class Manager;
 
 using ComponentID = std::size_t;
 using Group = std::size_t;
-inline ComponentID
-getComponentID()
-{
-  static ComponentID lastID = 0u;
-  return lastID++;
-}
+
+ComponentID
+getComponentID();
 
 template<typename T>
 inline ComponentID
@@ -49,10 +48,10 @@ class Component
 {
 public:
   Entity* entity;
-  virtual void init() {};
-  virtual void update(float dt) {};
-  virtual void draw() {};
-  virtual ~Component() {};
+  virtual void init();
+  virtual void update(float dt);
+  virtual void draw();
+  virtual ~Component();
 };
 
 class Entity
@@ -66,27 +65,16 @@ private:
   GroupBitSet groupBitSet;
 
 public:
-  Entity(Manager& mManager)
-    : manager(mManager)
-  {
-  }
-  void update(float dt)
-  {
-    for (auto& c : components)
-      c->update(dt);
-  }
-  void draw()
-  {
-    for (auto& c : components)
-      c->draw();
-  }
-  bool isActive() const { return active; }
-  void destroy() { active = false; }
+  Entity(Manager& mManager);
 
-  bool hasGroup(Group mGroup) { return groupBitSet[mGroup]; }
+  void update(float dt);
+  void draw();
+  bool isActive() const;
+  void destroy();
 
+  bool hasGroup(Group mGroup);
   void addGroup(Group mGroup);
-  void delGroup(Group mGroup) { groupBitSet[mGroup] = false; }
+  void delGroup(Group mGroup);
 
   template<typename T>
   bool hasComponent() const
@@ -109,6 +97,7 @@ public:
     c->init();
     return *c;
   }
+
   template<typename T>
   T& getComponent() const
   {
@@ -124,54 +113,12 @@ private:
   std::array<std::vector<Entity*>, maxGroups> groupedEntities;
 
 public:
-  void update(float dt)
-  {
-    for (auto& e : entities)
-      e->update(dt);
-  }
-  void draw()
-  {
-    for (auto& e : entities)
-      e->draw();
-  }
-  void refresh()
-  {
-
-    for (auto i(0u); i < maxGroups; i++) {
-      auto& v(groupedEntities[i]);
-      v.erase(std::remove_if(std::begin(v),
-                             std::end(v),
-                             [i](Entity* mEntity) {
-                               return !mEntity->isActive() ||
-                                      !mEntity->hasGroup(i);
-                             }),
-              std::end(v));
-    }
-
-    entities.erase(std::remove_if(std::begin(entities),
-                                  std::end(entities),
-                                  [](const std::unique_ptr<Entity>& mEntity) {
-                                    return !mEntity->isActive();
-                                  }),
-
-                   std::end(entities));
-  }
-
-  void AddToGroup(Entity* mEntity, Group mGroup)
-  {
-    groupedEntities[mGroup].emplace_back(mEntity);
-  }
-
-  std::vector<Entity*>& getGroup(Group mGroup)
-  {
-    return groupedEntities[mGroup];
-  }
-
-  Entity& addEntity()
-  {
-    Entity* e = new Entity(*this);
-    std::unique_ptr<Entity> uPtr{ e };
-    entities.emplace_back(std::move(uPtr));
-    return *e;
-  }
+  void update(float dt);
+  void draw();
+  void refresh();
+  void AddToGroup(Entity* mEntity, Group mGroup);
+  std::vector<Entity*>& getGroup(Group mGroup);
+  Entity& addEntity();
 };
+
+#endif // ECS.HPP

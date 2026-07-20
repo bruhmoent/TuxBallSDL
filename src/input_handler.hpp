@@ -12,7 +12,6 @@
 #ifndef INPUT_HANDLER_HPP
 #define INPUT_HANDLER_HPP
 
-#include "ECS/Components.h"
 #include "ECS/ECS.h"
 #include "game.hpp"
 #include "level_data.hpp"

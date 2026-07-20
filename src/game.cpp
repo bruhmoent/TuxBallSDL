@@ -12,7 +12,11 @@
 #include <SDL3_mixer/SDL_mixer.h>
 #include <fstream>
 
-#include "ECS/Components.h"
+#include "ECS/SpriteComponents.h"
+#include "ECS/TransformComponent.h"
+#include "collider_component.hpp"
+#include "tile_component.hpp"
+
 #include "ParticleExample.h"
 #include "ParticleSystem.h"
 #include "collision.hpp"
@@ -57,12 +61,7 @@ auto& enemies(manager.getGroup(groupEnemies));
 ParticleExample* particles_snow = new ParticleExample();
 
 void
-Game::init(const char* title,
-           int xpos,
-           int ypos,
-           int width,
-           int height,
-           bool fullscreen)
+Game::init(const char* title, int width, int height, bool fullscreen)
 {
   int flags = 0;
   if (fullscreen) {
@@ -74,7 +73,6 @@ Game::init(const char* title,
     m_renderer = SDL_CreateRenderer(m_window, nullptr);
 
     if (m_renderer) {
-      SDL_SetRenderDrawColor(m_renderer, 125, 125, 255, 255);
       particles_snow->setRenderer(m_renderer);
       particles_snow->setPosition(400, 0);
       particles_snow->setStyle(ParticleExample::SNOW);
@@ -91,6 +89,10 @@ Game::init(const char* title,
     player.addComponent<ColliderComponent>("player");
     player.addGroup(groupPlayers);
     player.addGroup(groupMap);
+
+    const std::string cursor_path =
+      Config::get_project_root() + "/assets/images/cursor.png";
+    m_cursor_texture = IMG_LoadTexture(m_renderer, cursor_path.c_str());
 
     if (!MIX_Init()) {
       std::cout << "MIX_Init Error: " << SDL_GetError() << std::endl;
@@ -120,7 +122,7 @@ Game::init(const char* title,
       }
     }
 
-  m_level->load();
+    m_level->load();
   } else {
     m_is_running = false;
   }
@@ -256,25 +258,28 @@ Game::render()
 
   particles_snow->draw();
 
-  // Draw the custom cursor
-  std::string cursor_path =
-    Config::get_project_root() + "/assets/images/cursor.png";
+  if (m_cursor_texture) {
+    SDL_FRect rect;
+    rect.w = 64.0f;
+    rect.h = 64.0f;
+    float mouseX, mouseY;
+    SDL_GetMouseState(&mouseX, &mouseY);
+    rect.x = mouseX;
+    rect.y = mouseY;
+    SDL_RenderTexture(m_renderer, m_cursor_texture, NULL, &rect);
+  }
 
-  SDL_Texture* texture = IMG_LoadTexture(m_renderer, cursor_path.c_str());
-  SDL_FRect rect;
-  rect.w = 64.0f;
-  rect.h = 64.0f;
-  float mouseX, mouseY;
-  SDL_GetMouseState(&mouseX, &mouseY);
-  rect.x = mouseX;
-  rect.y = mouseY;
-  SDL_RenderTexture(m_renderer, texture, NULL, &rect);
   SDL_RenderPresent(m_renderer);
 };
 
 void
 Game::clean()
 {
+  if (m_cursor_texture) {
+    SDL_DestroyTexture(m_cursor_texture);
+    m_cursor_texture = nullptr;
+  }
+
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);
   SDL_Quit();
@@ -320,12 +325,4 @@ Game::get_camera_position()
   point.y = camera.y;
 
   return point;
-}
-
-void
-Game::back_to_prior_position(float x, float y)
-{
-  Vector2D vector = player.getComponent<TransformComponent>().position;
-  vector.x = x;
-  vector.y = y;
 }

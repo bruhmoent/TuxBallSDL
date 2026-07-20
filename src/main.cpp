@@ -22,15 +22,14 @@ main(int argc, char* argv[])
   int frame_time;
 
   Game& game = Game::get();
-  game.init(
-    "TuxBall", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 640, false);
+  game.init("TuxBall", 800, 640, false);
 
   Uint64 last_time = SDL_GetTicksNS();
 
   while (game.running()) {
     frame_start = SDL_GetTicks();
 
-    Uint64 current_time = SDL_GetTicksNS();
+    const Uint64 current_time = SDL_GetTicksNS();
     float dt = (float)(current_time - last_time) / 1000000000.0f;
     last_time = current_time;
 

@@ -11,7 +11,9 @@
 
 #pragma once
 #include "../texture_manager.hpp"
-#include "Components.h"
+#include "ECS.h"
+#include "TransformComponent.h"
+
 #include <SDL3/SDL.h>
 
 class SpriteComponent : public Component

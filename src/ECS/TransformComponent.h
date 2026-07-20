@@ -11,7 +11,7 @@
 
 #pragma once
 #include "../vector_math.hpp"
-#include "Components.h"
+#include "ECS.h"
 
 class TransformComponent : public Component
 {
@@ -30,6 +30,7 @@ public:
     position.Zero();
     scale = sc;
   }
+
   TransformComponent(float x, float y) { position.Zero(); }
   TransformComponent(float x, float y, int h, int w, int sc)
   {
@@ -39,6 +40,7 @@ public:
     width = w;
     scale = sc;
   }
+
   void init() override { velocity.Zero(); }
 
   void update(float dt) override

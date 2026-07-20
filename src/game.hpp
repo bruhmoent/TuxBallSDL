@@ -37,8 +37,6 @@ public:
   void clean();
 
   void init(const char* title,
-            int xpos,
-            int ypos,
             int width,
             int height,
             bool fullscreen);
@@ -54,7 +52,6 @@ public:
   bool cCol();
   bool cColP();
   void uCol();
-  void back_to_prior_position(float x, float y);
   Point get_player_position();
   void add_block(std::shared_ptr<Rectangle> rectangle);
   Point get_camera_position();
@@ -70,6 +67,7 @@ private:
   SDL_Window* m_window;
   std::unique_ptr<Level> m_level;
   float m_delta_time = 0.0f;
+  SDL_Texture* m_cursor_texture = nullptr;
 };
 
 #endif // GAME_HPP
